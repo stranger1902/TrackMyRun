@@ -11,6 +11,7 @@ gpsLocation = "21.3.0"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 ksp = "2.0.20-1.0.24"
+datastore = "1.0.0"
 daggerHilt = "2.51"
 coreKtx = "1.15.0"
 kotlin = "2.0.20"
@@ -34,6 +35,9 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+
+# Datastore
+datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
 # Dagger-Hilt
 dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "daggerHilt" }

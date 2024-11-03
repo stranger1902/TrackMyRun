@@ -69,6 +69,9 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui)
 
+    // Datastore
+    implementation(libs.datastore.preferences)
+
     // Dagger-Hilt
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.compiler)

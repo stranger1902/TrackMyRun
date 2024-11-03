@@ -14,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.LaunchedEffect
@@ -26,12 +27,15 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import android.widget.Toast
 
 @Composable
 fun OnBoardingScreen(
     modifier: Modifier = Modifier,
     onBoardingCompleted: () -> Unit
 ) {
+
+    val context = LocalContext.current
 
     val viewModel = hiltViewModel<OnBoardingViewModel>()
 
@@ -94,7 +98,7 @@ fun OnBoardingScreen(
             size = viewModel.onBoardingPageData.size,
             currentPage = currentPage,
             modifier = Modifier
-                .offset(y = -ButtonDefaults.MinHeight/2)
+                .offset(y = -ButtonDefaults.MinHeight / 2)
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
         )
@@ -116,10 +120,24 @@ fun OnBoardingScreen(
 
             Button(
                 onClick = {
-                    if (currentPage == viewModel.onBoardingPageData.size - 1)
-                        onBoardingCompleted()
-                    else
-                        viewModel.navigateNextPage()
+
+                    when(currentPage) {
+
+                        viewModel.onBoardingPageData.size - 1 -> {
+                            onBoardingCompleted()
+                        }
+
+                        1 -> {
+                            if (!viewModel.checkUser())
+                                Toast.makeText(context, "Compila tutti i campi", Toast.LENGTH_SHORT).show()
+                            else {
+                                viewModel.saveUserInPreferences()
+                                viewModel.navigateNextPage()
+                            }
+                        }
+
+                        else -> viewModel.navigateNextPage()
+                    }
                 }
             ) { Text(text = if (currentPage != viewModel.onBoardingPageData.size - 1) "Avanti" else "Iniziamo") }
         }
