@@ -1,0 +1,60 @@
+[versions]
+
+kotlinSerialization = "1.6.3"
+lifecycleRuntimeKtx = "2.8.7"
+navigationCompose = "2.8.3"
+daggerHiltPlugin = "2.51"
+activityCompose = "1.9.3"
+composeBom = "2024.10.01"
+hiltViewModel = "1.2.0"
+gpsLocation = "21.3.0"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+ksp = "2.0.20-1.0.24"
+daggerHilt = "2.51"
+coreKtx = "1.15.0"
+kotlin = "2.0.20"
+junit = "4.13.2"
+agp = "8.6.1"
+
+[libraries]
+
+# Android
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+kotlin-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+
+# Jetpack Compose
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-hilt-viewmodel-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltViewModel" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+
+# Dagger-Hilt
+dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "daggerHilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "daggerHilt" }
+dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "daggerHilt" }
+
+# Gps Location Service
+gps-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "gpsLocation" }
+
+# Android Test
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+
+[plugins]
+
+jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "daggerHiltPlugin"}
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
