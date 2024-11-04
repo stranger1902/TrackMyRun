@@ -10,7 +10,6 @@ import com.example.trackmyrun.main.navigation.MainGraph
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.layout.fillMaxSize
 import com.example.trackmyrun.core.utils.UserManager
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.material3.AlertDialog
@@ -19,7 +18,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.activity.ComponentActivity
-import androidx.compose.material3.Scaffold
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Button
 import androidx.compose.runtime.getValue
@@ -78,54 +76,47 @@ class MainActivity: ComponentActivity() {
 
             TrackMyRunTheme {
 
-                Scaffold(
+                val navController = rememberNavController()
+
+                if (!permissionGranted)
+                    AlertDialog(
+                        text = {
+                            Text(text = "L'applicazione ha bisogno di tutti i permessi necessari per poter funzionare correttamente")
+                        },
+                        title = {
+                            Text(text = "Permessi necessari")
+                        },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+                                    Intent(
+                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                        Uri.fromParts("package", packageName, null)
+                                    ).also { startActivity(it) }
+                                }
+                            ) { Text(text = "Apri impostazioni") }
+                        },
+                        onDismissRequest = { }
+                    )
+
+                NavHost(
+                    startDestination = if (!userManager.checkUser()) OnBoardingGraph else MainGraph,
+                    navController = navController,
                     modifier = Modifier
                         .fillMaxSize()
-                ) { innerPadding ->
+                ) {
 
-                    val navController = rememberNavController()
-
-                    if (!permissionGranted)
-                        AlertDialog(
-                            text = {
-                                Text(text = "L'applicazione ha bisogno di tutti i permessi necessari per poter funzionare correttamente")
-                            },
-                            title = {
-                                Text(text = "Permessi necessari")
-                            },
-                            confirmButton = {
-                                Button(
-                                    onClick = {
-                                        Intent(
-                                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                            Uri.fromParts("package", packageName, null)
-                                        ).also { startActivity(it) }
-                                    }
-                                ) { Text(text = "Apri impostazioni") }
-                            },
-                            onDismissRequest = { }
-                        )
-
-                    NavHost(
-                        startDestination = if (!userManager.checkUser()) OnBoardingGraph else MainGraph,
-                        navController = navController,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                    ) {
-
-                        registerOnBoardingGraph(
-                            onBoardingCompleted = {
-                                navController.navigate(MainGraph) {
-                                    popUpTo<OnBoardingGraph> {
-                                        inclusive = true
-                                    }
+                    registerOnBoardingGraph(
+                        onBoardingCompleted = {
+                            navController.navigate(MainGraph) {
+                                popUpTo<OnBoardingGraph> {
+                                    inclusive = true
                                 }
                             }
-                        )
+                        }
+                    )
 
-                        registerMainGraph()
-                    }
+                    registerMainGraph()
                 }
             }
         }

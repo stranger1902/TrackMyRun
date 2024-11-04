@@ -19,7 +19,7 @@ class OnBoardingRepositoryImpl(
         ),
 
         OnBoardingModel(
-            description = "Inserisci le tue informazioni essenziali per per personalizzzare la tua esperienza e tenere traccia dei tuoi progressi",
+            description = "Inserisci le tue informazioni essenziali per personalizzzare la tua esperienza e tenere traccia dei tuoi progressi",
             title = "Creiamo il tuo profilo",
             resImage = R.drawable.screen_2
         ),

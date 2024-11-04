@@ -45,7 +45,7 @@ fun PagerIndicatorItem(
     val height = 12.dp
 
     val width = animateDpAsState(
-        targetValue = if (isSelected) 25.dp else height,
+        targetValue = if (isSelected) 32.dp else height,
         label = "pager indicator item width"
     )
 
