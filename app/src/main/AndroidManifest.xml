@@ -33,6 +33,12 @@
 
         </activity>
 
+        <service
+            android:name=".service.RunTrackingService"
+            android:foregroundServiceType="location"
+            android:exported="false">
+        </service>
+
     </application>
 
 </manifest>
