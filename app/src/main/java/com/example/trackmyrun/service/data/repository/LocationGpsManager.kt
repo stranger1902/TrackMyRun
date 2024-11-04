@@ -9,6 +9,7 @@ import com.google.android.gms.location.LocationResult
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import android.location.LocationManager
+import android.annotation.SuppressLint
 import kotlinx.coroutines.launch
 import android.content.Context
 import javax.inject.Inject
@@ -26,6 +27,7 @@ class LocationGpsManager @Inject constructor(
 
     private val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
+    @SuppressLint("MissingPermission")
     val currentGpsLocation = callbackFlow {
 
         val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
