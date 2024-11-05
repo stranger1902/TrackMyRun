@@ -15,6 +15,9 @@ class Constants {
 
         const val MAX_WEIGHT_KG = 600
         const val MAX_HEIGHT_CM = 250
+
+        const val POLYLINE_WIDTH = 32f
+        const val MAPS_ZOOM = 17f
     }
 
 }
