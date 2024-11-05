@@ -14,7 +14,7 @@ class TimerManager {
 
     private val timerScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    private val _timeElapsedMillis = MutableStateFlow(0)
+    private val _timeElapsedMillis = MutableStateFlow(0L)
     val timeElapsedMillis = _timeElapsedMillis.asStateFlow()
 
     private var timerJob: Job? = null

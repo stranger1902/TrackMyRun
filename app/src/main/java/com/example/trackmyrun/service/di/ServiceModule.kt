@@ -6,6 +6,7 @@ import com.example.trackmyrun.service.data.repository.RunTrackingManager
 import com.example.trackmyrun.service.data.repository.TimerManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.google.android.gms.location.LocationServices
+import com.example.trackmyrun.core.utils.UserManager
 import dagger.hilt.components.SingletonComponent
 import android.content.Context
 import javax.inject.Singleton
@@ -34,10 +35,11 @@ object ServiceModule {
 
     @Provides
     @Singleton
-    fun provideRunTrackingManager(gpsLocationManager: GpsLocationManager, timerManager: TimerManager): RunTrackingManager {
+    fun provideRunTrackingManager(gpsLocationManager: GpsLocationManager, timerManager: TimerManager, userManager: UserManager): RunTrackingManager {
         return RunTrackingManager(
             gpsLocationManager = gpsLocationManager,
-            timerManager = timerManager
+            timerManager = timerManager,
+            userManager = userManager
         )
     }
 

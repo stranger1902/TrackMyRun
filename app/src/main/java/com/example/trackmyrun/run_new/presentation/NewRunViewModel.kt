@@ -27,14 +27,14 @@ class NewRunViewModel @Inject constructor(
     fun pauseRunning() {
         Intent(context, RunTrackingService::class.java).apply {
             action = RunTrackingService.PAUSE_RUN_TRACKING
-            context.startForegroundService(this)
+            context.startService(this)
         }
     }
 
     fun stopRunning() {
         Intent(context, RunTrackingService::class.java).apply {
             action = RunTrackingService.STOP_RUN_TRACKING
-            context.startForegroundService(this)
+            context.startService(this)
         }
     }
 
