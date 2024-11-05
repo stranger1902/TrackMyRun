@@ -1,5 +1,6 @@
 package com.example.trackmyrun.run_new.presentation
 
+import com.example.trackmyrun.run_new.presentation.component.NewRunController
 import com.google.maps.android.compose.rememberCameraPositionState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.trackmyrun.core.domain.model.toLatLng
@@ -12,19 +13,16 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.example.trackmyrun.core.utils.Constants
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.MapType
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
-import androidx.compose.material3.Button
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -80,36 +78,31 @@ fun NewRunScreen(
                 .fillMaxSize()
         ) {
 
+            currentRun.pathPointList.map { pathPoint ->
+                Polyline(
+                    points = pathPoint.map { it.toLatLng() },
+                    width = Constants.POLYLINE_WIDTH
+                )
+            }
+
         }
 
-        Column(
+        NewRunController(
+            currentRun = currentRun,
+            onStartClick = {
+                viewModel.startRunning()
+            },
+            onPauseClick = {
+                viewModel.pauseRunning()
+            },
+            onStopClick = {
+                viewModel.stopRunning()
+            },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(32.dp)
+                .offset(y = (-32).dp)
+                .padding(16.dp)
                 .fillMaxWidth()
-        ) {
-
-            Button(
-                onClick = {
-                    viewModel.startRunning()
-                }
-            ) { Text(text = "START") }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    viewModel.pauseRunning()
-                }
-            ) { Text(text = "PAUSE") }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    viewModel.stopRunning()
-                }
-            ) { Text(text = "STOP") }
-        }
+        )
     }
 }

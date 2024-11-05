@@ -5,18 +5,21 @@ import com.example.trackmyrun.main.navigation.BottomNavigationGraph
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.ui.res.painterResource
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.TopAppBar
 import androidx.navigation.compose.NavHost
 import androidx.compose.material3.Scaffold
@@ -36,7 +39,8 @@ import com.example.trackmyrun.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onFloatingButtonClick: () ->Unit
 ) {
 
     val viewModel = hiltViewModel<MainViewModel>()
@@ -56,12 +60,12 @@ fun MainScreen(
                         contentDescription = "app icon",
                         tint = Color.Unspecified,
                         modifier = Modifier
-                            .size(48.dp)
+                            .size(44.dp)
                     )
                 },
                 title = {
                     Text(
-                        fontSize = 42.sp,
+                        fontSize = 40.sp,
                         text = buildAnnotatedString {
                             append(" Track")
                             withStyle(
@@ -76,6 +80,18 @@ fun MainScreen(
                     )
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    onFloatingButtonClick()
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "new run"
+                )
+            }
         },
         bottomBar = {
             BottomAppBar(

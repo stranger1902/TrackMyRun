@@ -116,7 +116,9 @@ class MainActivity: ComponentActivity() {
                         }
                     )
 
-                    registerMainGraph()
+                    registerMainGraph(
+                        navController = navController
+                    )
                 }
             }
         }

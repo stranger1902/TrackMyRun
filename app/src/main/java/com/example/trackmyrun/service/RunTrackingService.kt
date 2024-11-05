@@ -3,6 +3,7 @@ package com.example.trackmyrun.service
 import com.example.trackmyrun.service.data.repository.ServiceNotificationManager
 import com.example.trackmyrun.service.data.repository.RunTrackingManager
 import com.example.trackmyrun.service.domain.model.TrackingInfoModel
+import kotlinx.coroutines.flow.distinctUntilChanged
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
@@ -30,6 +31,7 @@ class RunTrackingService: Service() {
     lateinit var runTrackingManager: RunTrackingManager
 
     private var runTrackingJob: Job? = null
+    private var isLaunched = false
 
     companion object {
         const val START_RUN_TRACKING = "START_TRACKING"
@@ -56,7 +58,10 @@ class RunTrackingService: Service() {
 
     private fun startTracking() {
 
-        startForeground(ServiceNotificationManager.RUN_TRACKING_NOTIFICATION_ID, notificationManager.baseNotification.build())
+        if (!isLaunched) {
+            startForeground(ServiceNotificationManager.RUN_TRACKING_NOTIFICATION_ID, notificationManager.baseNotification.build())
+            isLaunched = true
+        }
 
         if (runTrackingJob == null)
             runTrackingJob = combine(
@@ -71,6 +76,9 @@ class RunTrackingService: Service() {
             .onStart {
                 runTrackingManager.startTracking()
             }
+            .distinctUntilChanged { old, new ->
+                old.timeElapsedMillis == new.timeElapsedMillis
+            }
             .onEach {
                 runTrackingManager.updateRunTrackingState(
                     timeElapsedMillis = it.timeElapsedMillis,
@@ -84,6 +92,7 @@ class RunTrackingService: Service() {
     private fun pauseTracking() {
         runTrackingManager.pauseTracking()
         runTrackingJob?.cancel()
+        runTrackingJob = null
     }
 
     private fun stopTracking() {
@@ -91,8 +100,10 @@ class RunTrackingService: Service() {
         runTrackingManager.stopTracking()
         runTrackingJob?.cancel()
 
-        stopForeground(STOP_FOREGROUND_REMOVE)
-        stopSelf()
+        if (isLaunched) {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf()
+        }
     }
 
     override fun onDestroy() {
@@ -101,6 +112,7 @@ class RunTrackingService: Service() {
 
         runTrackingJob = null
         serviceScope.cancel()
+        isLaunched = false
     }
 
 }
