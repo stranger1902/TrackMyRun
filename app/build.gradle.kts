@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dagger.hilt)
+    alias(libs.plugins.maps.secret)
     alias(libs.plugins.kotlin.ksp)
 }
 
@@ -79,6 +80,9 @@ dependencies {
 
     // Gps Location Service
     implementation(libs.gps.location)
+
+    // Google Maps Compose
+    implementation(libs.maps.compose)
 
     // Android Test
     androidTestImplementation(platform(libs.androidx.compose.bom))

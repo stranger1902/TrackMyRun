@@ -2,6 +2,7 @@ package com.example.trackmyrun.service.data.repository
 
 import com.example.trackmyrun.service.domain.model.GpsLocationModel
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.example.trackmyrun.core.domain.model.PathPointModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -15,7 +16,7 @@ import android.content.Context
 import javax.inject.Inject
 import android.os.Looper
 
-class LocationGpsManager @Inject constructor(
+class GpsLocationManager @Inject constructor(
     private val locationClient: FusedLocationProviderClient,
     @ApplicationContext private val context: Context
 ) {
@@ -46,8 +47,10 @@ class LocationGpsManager @Inject constructor(
                     launch {
                         send(
                             GpsLocationModel(
-                                longitude = location.longitude,
-                                latitude = location.latitude,
+                                pathPoint = PathPointModel(
+                                    longitude = location.longitude,
+                                    latitude = location.latitude
+                                ),
                                 speedMs = location.speed
                             )
                         )

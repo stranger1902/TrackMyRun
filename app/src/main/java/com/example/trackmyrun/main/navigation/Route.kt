@@ -5,6 +5,9 @@ import kotlinx.serialization.Serializable
 sealed class MainDestination {
 
     @Serializable
+    data object NewRunScreen: MainDestination()
+
+    @Serializable
     data object MainScreen: MainDestination()
 }
 

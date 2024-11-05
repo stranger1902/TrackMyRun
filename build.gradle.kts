@@ -5,5 +5,6 @@ plugins {
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.dagger.hilt) apply false
+    alias(libs.plugins.maps.secret) apply false
     alias(libs.plugins.kotlin.ksp) apply false
 }

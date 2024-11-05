@@ -11,11 +11,13 @@ gpsLocation = "21.3.0"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 ksp = "2.0.20-1.0.24"
-datastore = "1.0.0"
+mapsSecret = "2.0.1"
+datastore = "1.1.1"
 daggerHilt = "2.51"
 coreKtx = "1.15.0"
 kotlin = "2.0.20"
 junit = "4.13.2"
+maps = "5.0.3"
 agp = "8.6.1"
 
 [libraries]
@@ -47,6 +49,9 @@ dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref 
 # Gps Location Service
 gps-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "gpsLocation" }
 
+# Google Maps Compose
+maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "maps" }
+
 # Android Test
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -56,9 +61,11 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 [plugins]
 
+maps-secret = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "mapsSecret" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "daggerHiltPlugin"}
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
