@@ -83,6 +83,7 @@ dependencies {
 
     // Google Maps Compose
     implementation(libs.maps.compose)
+    implementation(libs.maps.utils)
 
     // Android Test
     androidTestImplementation(platform(libs.androidx.compose.bom))
