@@ -11,8 +11,8 @@ class Constants {
         val WEIGHT_USER_DATASTORE_KEY = intPreferencesKey("weight")
         val NAME_USER_DATASTORE_KEY = stringPreferencesKey("name")
 
+        const val RUN_TRACKING_DB_NAME = "run_tracking.db"
         const val USER_DATASTORE_KEY = "user"
-
         const val IMAGE_FILE_PATH = "image"
 
         const val GPS_FASTEST_INTERVAL_MILLIS = 1000L

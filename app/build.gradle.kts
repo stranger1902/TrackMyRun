@@ -73,6 +73,12 @@ dependencies {
     // Datastore
     implementation(libs.datastore.preferences)
 
+    // Room Database
+    annotationProcessor(libs.room.compiler)
+    implementation(libs.room.core)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
     // Dagger-Hilt
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.compiler)
