@@ -12,6 +12,6 @@ import androidx.room.Database
 )
 abstract class RunTrackingDatabase: RoomDatabase() {
 
-    abstract fun userDao(): RunDao
+    abstract fun runDao(): RunDao
 
 }

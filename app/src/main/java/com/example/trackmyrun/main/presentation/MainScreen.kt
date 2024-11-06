@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.foundation.layout.height
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.BottomAppBar
@@ -24,7 +25,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.navigation.compose.NavHost
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.withStyle
 import androidx.compose.runtime.getValue
@@ -56,11 +56,11 @@ fun MainScreen(
             TopAppBar(
                 navigationIcon = {
                     Icon(
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         painter = painterResource(R.drawable.ic_launcher),
                         contentDescription = "app icon",
-                        tint = Color.Unspecified,
                         modifier = Modifier
-                            .size(44.dp)
+                            .size(32.dp)
                     )
                 },
                 title = {

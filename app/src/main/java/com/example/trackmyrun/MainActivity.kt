@@ -3,13 +3,16 @@ package com.example.trackmyrun
 import com.example.trackmyrun.on_boarding.navigation.registerOnBoardingGraph
 import com.example.trackmyrun.on_boarding.navigation.OnBoardingGraph
 import com.example.trackmyrun.main.navigation.registerMainGraph
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.example.trackmyrun.core.theme.TrackMyRunTheme
 import androidx.navigation.compose.rememberNavController
 import com.example.trackmyrun.main.navigation.MainGraph
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.datastore.preferences.core.Preferences
 import androidx.compose.foundation.layout.fillMaxSize
 import com.example.trackmyrun.core.utils.UserManager
+import com.example.trackmyrun.core.utils.Constants
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.material3.AlertDialog
@@ -22,18 +25,22 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Button
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.datastore.core.DataStore
 import android.content.pm.PackageManager
 import androidx.compose.material3.Text
 import androidx.lifecycle.Lifecycle
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.launch
 import android.provider.Settings
+import android.content.Context
 import android.content.Intent
 import javax.inject.Inject
 import android.os.Bundle
 import android.os.Build
 import android.Manifest
 import android.net.Uri
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(Constants.USER_DATASTORE_KEY)
 
 @AndroidEntryPoint
 class MainActivity: ComponentActivity() {

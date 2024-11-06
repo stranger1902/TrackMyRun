@@ -3,24 +3,19 @@ package com.example.trackmyrun.core.utils
 import com.example.trackmyrun.core.utils.Constants.Companion.WEIGHT_USER_DATASTORE_KEY
 import com.example.trackmyrun.core.utils.Constants.Companion.HEIGHT_USER_DATASTORE_KEY
 import com.example.trackmyrun.core.utils.Constants.Companion.NAME_USER_DATASTORE_KEY
-import com.example.trackmyrun.core.utils.Constants.Companion.USER_DATASTORE_KEY
-import androidx.datastore.preferences.preferencesDataStore
 import com.example.trackmyrun.core.domain.model.UserModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.MutableStateFlow
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.text.capitalize
 import kotlinx.coroutines.flow.asStateFlow
-import androidx.datastore.core.DataStore
 import kotlinx.coroutines.CoroutineScope
+import com.example.trackmyrun.dataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.content.Context
-
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(USER_DATASTORE_KEY)
 
 class UserManager(
     @ApplicationContext private val context: Context
