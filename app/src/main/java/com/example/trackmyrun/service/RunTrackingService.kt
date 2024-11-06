@@ -80,6 +80,9 @@ class RunTrackingService: Service() {
                 old.timeElapsedMillis == new.timeElapsedMillis
             }
             .onEach {
+
+                notificationManager.updateServiceTrackingNotification(true, it.timeElapsedMillis)
+
                 runTrackingManager.updateRunTrackingState(
                     timeElapsedMillis = it.timeElapsedMillis,
                     pathPoint = it.gpsLocation.pathPoint,
@@ -90,6 +93,7 @@ class RunTrackingService: Service() {
     }
 
     private fun pauseTracking() {
+        notificationManager.updateServiceTrackingNotification(false, null)
         runTrackingManager.pauseTracking()
         runTrackingJob?.cancel()
         runTrackingJob = null
@@ -97,6 +101,7 @@ class RunTrackingService: Service() {
 
     private fun stopTracking() {
 
+        notificationManager.updateServiceTrackingNotification(false, null)
         runTrackingManager.stopTracking()
         runTrackingJob?.cancel()
 
