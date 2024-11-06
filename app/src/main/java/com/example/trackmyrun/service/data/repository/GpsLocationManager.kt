@@ -7,6 +7,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import com.example.trackmyrun.core.utils.Constants
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import android.location.LocationManager
@@ -21,11 +22,6 @@ class GpsLocationManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
 
-    companion object {
-        private const val FASTEST_INTERVAL_MILLIS = 3000L
-        private const val INTERVAL_MILLIS = 5000L
-    }
-
     private val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
     @SuppressLint("MissingPermission")
@@ -36,8 +32,8 @@ class GpsLocationManager @Inject constructor(
 
 //        if (!isNetworkEnabled && !isGpsEnabled) throw RuntimeException("Enable GPS or Network")
 
-        val request = LocationRequest.Builder(INTERVAL_MILLIS)
-            .setMinUpdateIntervalMillis(FASTEST_INTERVAL_MILLIS)
+        val request = LocationRequest.Builder(Constants.GPS_INTERVAL_MILLIS)
+            .setMinUpdateIntervalMillis(Constants.GPS_FASTEST_INTERVAL_MILLIS)
             .build()
 
         val locationCallback = object : LocationCallback() {

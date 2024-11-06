@@ -4,8 +4,10 @@ import com.example.trackmyrun.run_new.presentation.CurrentRunState
 import com.example.trackmyrun.core.extensions.toStopwatchFormat
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Arrangement
+import com.example.trackmyrun.core.extensions.toKmH
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
@@ -13,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
@@ -38,6 +41,9 @@ fun NewRunController(
 ) {
 
     Card (
+        colors = CardDefaults.cardColors().copy(
+            containerColor = CardDefaults.cardColors().containerColor.copy(alpha = 0.75f)
+        ),
         modifier = modifier
     ) {
         Column(
@@ -121,7 +127,7 @@ fun NewRunController(
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Text(
-                        text = "${currentRun.avgSpeedMs.roundToInt()} m/s",
+                        text = "${"%.2f".format(currentRun.avgSpeedMs.toKmH())} Km/h",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
@@ -163,7 +169,7 @@ fun NewRunController(
                     .fillMaxWidth()
             ) {
 
-                Button(
+                OutlinedButton (
                     modifier = Modifier
                         .weight(1f),
                     onClick = {

@@ -7,7 +7,6 @@ import com.example.trackmyrun.core.utils.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import com.google.maps.android.SphericalUtil
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -36,48 +35,39 @@ class RunTrackingManager @Inject constructor(
             SphericalUtil.computeDistanceBetween(lastPathPoint.toLatLng(), pathPoint.toLatLng())
         } ?: 0.0
 
-        _runTrackingState.update {
-            it.copy(
-                avgSpeedMs = ((_runTrackingState.value.avgSpeedMs * size) + speedMs) / (size + 1),
-                distanceMeters = it.distanceMeters + distance.toFloat(),
-                kcalBurned = it.kcalBurned + calories.toFloat(),
-                timeElapsedMillis = timeElapsedMillis,
-                lastPathPoint = pathPoint,
-                pathPointList = _runTrackingState.value.pathPointList.apply {
-                    last().add(pathPoint)
-                }
-            )
-        }
+        _runTrackingState.value = _runTrackingState.value.copy(
+            avgSpeedMs = ((_runTrackingState.value.avgSpeedMs * size) + speedMs) / (size + 1),
+            distanceMeters = _runTrackingState.value.distanceMeters + distance.toFloat(),
+            kcalBurned = _runTrackingState.value.kcalBurned + calories.toFloat(),
+            timeElapsedMillis = timeElapsedMillis,
+            lastPathPoint = pathPoint,
+            pathPointList = _runTrackingState.value.pathPointList.apply {
+                last().add(pathPoint)
+            }
+        )
     }
 
     fun startTracking() {
-        _runTrackingState.update {
-            it.copy(
-                pathPointList = it.pathPointList.toMutableList().apply { add(mutableListOf()) },
-                isTracking = true
-            )
-        }.also {
+        _runTrackingState.value = _runTrackingState.value.copy(
+            pathPointList = _runTrackingState.value.pathPointList.toMutableList().apply { add(mutableListOf()) },
+            isTracking = true
+        ).also {
             timerManager.startTimer()
         }
     }
 
     fun pauseTracking() {
-        _runTrackingState.update {
-            it.copy(
-                lastPathPoint = null,
-                isTracking = false
-            )
-        }.also {
+        _runTrackingState.value = _runTrackingState.value.copy(
+            lastPathPoint = null,
+            isTracking = false
+        ).also {
             timerManager.pauseTimer()
         }
     }
 
     fun stopTracking() {
-        _runTrackingState.update {
-            CurrentRunState()
-        }.also {
-            timerManager.stopTimer()
-        }
+        _runTrackingState.value = CurrentRunState()
+        timerManager.stopTimer()
     }
 
 }
