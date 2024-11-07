@@ -3,20 +3,24 @@ package com.example.trackmyrun.home.presentation
 import com.example.trackmyrun.core.data.local.model.ResponseErrorModel
 import com.example.trackmyrun.home.domain.repository.RunRepository
 import com.example.trackmyrun.core.utils.DatabasePaginator
+import com.example.trackmyrun.core.utils.FileImageManager
 import com.example.trackmyrun.home.domain.model.RunModel
 import com.example.trackmyrun.core.utils.UserManager
-import com.example.trackmyrun.core.extensions.toKmH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.asStateFlow
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
+import android.graphics.Bitmap
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    private val fileImageManager: FileImageManager,
     private val runRepository: RunRepository,
     private val userManager: UserManager
 ): ViewModel() {
@@ -56,9 +60,9 @@ class HomeViewModel @Inject constructor(
 //                runRepository.insertRun(
 //                    RunModel(
 //                        startTimestamp = System.currentTimeMillis() + (it * 1000),
-//                        avgSpeedMs = it.toFloat().toKmH(),
 //                        durationMillis = it * 3600000L,
 //                        distanceMeters = it * 1000f,
+//                        avgSpeedMs = it.toFloat(),
 //                        kcalBurned = it * 100f,
 //                        id = it.toString()
 //                    )
@@ -70,6 +74,12 @@ class HomeViewModel @Inject constructor(
     fun loadNextPage() {
         viewModelScope.launch {
             paginator.loadNextPage()
+        }
+    }
+
+    fun loadImage(filename: String): Deferred<Bitmap?> {
+        return viewModelScope.async {
+            fileImageManager.loadImage(filename)
         }
     }
 

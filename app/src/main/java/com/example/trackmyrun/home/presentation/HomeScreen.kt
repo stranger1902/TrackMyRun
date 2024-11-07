@@ -85,7 +85,10 @@ fun HomeScreen(
                 RunItem(
                     item = item,
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    snapshot = {
+                        viewModel.loadImage(item.id)
+                    }
                 )
             },
             onRefresh = {
