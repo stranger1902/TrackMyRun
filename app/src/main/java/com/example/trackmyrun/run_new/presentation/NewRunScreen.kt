@@ -10,6 +10,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import androidx.compose.foundation.layout.fillMaxWidth
 import com.google.android.gms.maps.CameraUpdateFactory
 import androidx.compose.foundation.layout.fillMaxSize
+import com.google.android.gms.maps.model.LatLngBounds
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.offset
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapEffect
 import androidx.compose.ui.platform.LocalContext
+import com.google.maps.android.ktx.awaitSnapshot
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.MapType
 import androidx.compose.runtime.LaunchedEffect
@@ -32,6 +34,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import android.widget.Toast
 import kotlin.uuid.Uuid
 
@@ -104,11 +107,22 @@ fun NewRunScreen(
 
                 if (takeSnapshot) {
 
-                    map.snapshot { snapshot ->
-                        snapshot?.let {
-                            val id = Uuid.random().toHexString()
-                            viewModel.saveSnapshot(it, id)
+                    LatLngBounds.Builder().apply {
+                        currentRun.pathPointList.flatMap { pathPoint ->
+                            pathPoint.map {
+                                include(it.toLatLng())
+                            }
                         }
+                    }.build().also {
+                        map.moveCamera(
+                            CameraUpdateFactory.newLatLngBounds(it, Constants.MAPS_SNAPSHOT_PADDING)
+                        )
+                    }
+
+                    val snapshot = map.awaitSnapshot()
+
+                    snapshot?.let {
+                        viewModel.saveSnapshot(it, Uuid.random().toHexString())
                     }
 
                     viewModel.stopRunning()
@@ -122,14 +136,13 @@ fun NewRunScreen(
                     width = Constants.POLYLINE_WIDTH
                 )
             }
-
         }
 
         NewRunController(
             currentRun = currentRun,
             onStartClick = {
                 if (!isMapLoaded)
-                    Toast.makeText(context, "map is not still fully loaded", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Attendere che la mappa sia completamente caricata", Toast.LENGTH_SHORT).show()
                 else
                     viewModel.startRunning()
             },
@@ -137,8 +150,12 @@ fun NewRunScreen(
                 viewModel.pauseRunning()
             },
             onStopClick = {
-                viewModel.pauseRunning()
-                takeSnapshot = true
+                if (currentRun.pathPointList.isEmpty()) {
+                    Toast.makeText(context, "Iniziare la corsa", Toast.LENGTH_SHORT).show()
+                } else {
+                    viewModel.pauseRunning()
+                    takeSnapshot = true
+                }
             },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
