@@ -4,9 +4,9 @@ import com.example.trackmyrun.core.data.local.model.ResponsePagingModel
 import com.example.trackmyrun.core.data.local.model.ResponseErrorModel
 import com.example.trackmyrun.home.domain.repository.RunRepository
 import com.example.trackmyrun.core.data.database.dao.RunDao
-import com.example.trackmyrun.home.domain.model.toEntity
-import com.example.trackmyrun.home.domain.model.RunModel
-import com.example.trackmyrun.home.domain.model.toModel
+import com.example.trackmyrun.core.domain.model.RunModel
+import com.example.trackmyrun.core.domain.model.toEntity
+import com.example.trackmyrun.core.domain.model.toModel
 import javax.inject.Inject
 
 class RunRepositoryImpl @Inject constructor(

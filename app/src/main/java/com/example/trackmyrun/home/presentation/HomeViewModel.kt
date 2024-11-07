@@ -4,7 +4,7 @@ import com.example.trackmyrun.core.data.local.model.ResponseErrorModel
 import com.example.trackmyrun.home.domain.repository.RunRepository
 import com.example.trackmyrun.core.utils.DatabasePaginator
 import com.example.trackmyrun.core.utils.FileImageManager
-import com.example.trackmyrun.home.domain.model.RunModel
+import com.example.trackmyrun.core.domain.model.RunModel
 import com.example.trackmyrun.core.utils.UserManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

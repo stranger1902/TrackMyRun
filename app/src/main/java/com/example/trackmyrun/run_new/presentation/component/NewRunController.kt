@@ -3,8 +3,9 @@ package com.example.trackmyrun.run_new.presentation.component
 import com.example.trackmyrun.run_new.presentation.CurrentRunState
 import com.example.trackmyrun.core.extensions.toStopwatchFormat
 import androidx.compose.foundation.layout.fillMaxWidth
+import com.example.trackmyrun.core.extensions.msToKmH
 import androidx.compose.foundation.layout.Arrangement
-import com.example.trackmyrun.core.extensions.toKmH
+import com.example.trackmyrun.core.extensions.mToKm
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.OutlinedButton
@@ -127,7 +128,7 @@ fun NewRunController(
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Text(
-                        text = "${"%.2f".format(currentRun.avgSpeedMs.toKmH())} Km/h",
+                        text = "${"%.2f".format(currentRun.avgSpeedMs.msToKmH())} Km/h",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
@@ -154,7 +155,7 @@ fun NewRunController(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Text(
-                    text = "${"%.2f".format(currentRun.distanceMeters)} m",
+                    text = "${"%.3f".format(currentRun.distanceMeters.mToKm())} Km",
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp
                 )

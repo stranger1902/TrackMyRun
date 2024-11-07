@@ -11,7 +11,7 @@ import dagger.Module
 
 @Module
 @InstallIn(SingletonComponent::class)
-object OnBoardingModule {
+object HomeModule {
 
     @Provides
     @Singleton

@@ -1,4 +1,4 @@
-package com.example.trackmyrun.home.domain.model
+package com.example.trackmyrun.core.domain.model
 
 data class RunModel(
     val distanceMeters: Float,

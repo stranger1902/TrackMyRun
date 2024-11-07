@@ -1,6 +1,6 @@
 package com.example.trackmyrun.home.presentation
 
-import com.example.trackmyrun.home.domain.model.RunModel
+import com.example.trackmyrun.core.domain.model.RunModel
 
 data class HomeState(
     val items: List<RunModel> = emptyList(),
