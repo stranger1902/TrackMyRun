@@ -4,6 +4,7 @@ import com.example.trackmyrun.home.presentation.component.PullToRefreshLazyColum
 import com.example.trackmyrun.home.presentation.component.RunItem
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.trackmyrun.core.domain.model.RunModel
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -25,7 +26,8 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToRunDetail: (run: RunModel) -> Unit
 ) {
 
     val viewModel = hiltViewModel<HomeViewModel>()
@@ -84,11 +86,14 @@ fun HomeScreen(
             itemContent = { item ->
                 RunItem(
                     item = item,
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    onNavigateToRunDetail = {
+                        onNavigateToRunDetail(item)
+                    },
                     snapshot = {
                         viewModel.loadImage(item.id)
-                    }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
                 )
             },
             onRefresh = {

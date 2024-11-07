@@ -3,8 +3,8 @@ package com.example.trackmyrun.main.navigation
 import com.example.trackmyrun.statistics.presentation.StatisticsScreen
 import com.example.trackmyrun.profile.presentation.ProfileScreen
 import com.example.trackmyrun.run_new.presentation.NewRunScreen
+import com.example.trackmyrun.home.navigation.registerHomeGraph
 import com.example.trackmyrun.main.presentation.MainScreen
-import com.example.trackmyrun.home.presentation.HomeScreen
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
@@ -38,10 +38,10 @@ fun NavGraphBuilder.registerMainGraph(navController: NavHostController) {
     }
 }
 
-fun NavGraphBuilder.registerBottomNavigationGraph() {
+fun NavGraphBuilder.registerBottomNavigationGraph(navController: NavHostController) {
 
     navigation<BottomNavigationGraph>(
-        startDestination = BottomNavigationDestination.HomeScreen
+        startDestination = BottomNavigationDestination.HomeGraph
     ) {
 
         composable<BottomNavigationDestination.StatisticsScreen> {
@@ -58,11 +58,6 @@ fun NavGraphBuilder.registerBottomNavigationGraph() {
             )
         }
 
-        composable<BottomNavigationDestination.HomeScreen> {
-            HomeScreen(
-                modifier = Modifier
-                    .fillMaxSize()
-            )
-        }
+        registerHomeGraph(navController)
     }
 }

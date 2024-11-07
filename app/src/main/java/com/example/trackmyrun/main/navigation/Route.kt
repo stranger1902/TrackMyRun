@@ -23,7 +23,7 @@ sealed class BottomNavigationDestination {
     data object ProfileScreen: BottomNavigationDestination()
 
     @Serializable
-    data object HomeScreen: BottomNavigationDestination()
+    data object HomeGraph: BottomNavigationDestination()
 }
 
 @Serializable

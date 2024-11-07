@@ -132,7 +132,7 @@ fun MainScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            registerBottomNavigationGraph()
+            registerBottomNavigationGraph(navController)
         }
     }
 
