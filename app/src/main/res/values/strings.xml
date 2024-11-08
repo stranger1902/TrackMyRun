@@ -1,3 +1,9 @@
 <resources>
+
+    <string name="run_screen_domain_deeplink_1">www.trackmyrun.example.com</string>
+    <string name="run_screen_domain_deeplink_2">trackmyrun.example.com</string>
+
+    <string name="run_screen_deeplink">https://com.example.trackmyrun</string>
+
     <string name="app_name">TrackMyRun</string>
 </resources>

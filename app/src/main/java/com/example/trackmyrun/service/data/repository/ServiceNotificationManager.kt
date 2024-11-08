@@ -4,11 +4,14 @@ import com.example.trackmyrun.core.extensions.toStopwatchFormat
 import com.example.trackmyrun.service.RunTrackingService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import androidx.core.app.NotificationCompat
+import com.example.trackmyrun.MainActivity
+import androidx.core.app.TaskStackBuilder
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import com.example.trackmyrun.R
+import androidx.core.net.toUri
 import android.content.Context
 import android.content.Intent
 import javax.inject.Inject
@@ -19,8 +22,10 @@ class ServiceNotificationManager @Inject constructor(
 ){
 
     companion object {
+
         private const val RUN_TRACKING_NOTIFICATION_CHANNEL_ID = "run_tracking_channel"
         private const val RUN_TRACKING_NOTIFICATION_CHANNEL_NAME = "Run Tracking"
+
         const val RUN_TRACKING_NOTIFICATION_ID = 999
     }
 
@@ -29,12 +34,22 @@ class ServiceNotificationManager @Inject constructor(
     private var durationInMillis = 0L
     private var isTracking = false
 
+    private val showNewRunScreenPendingIntent: PendingIntent?
+        get() = Intent(context, MainActivity::class.java).apply {
+            data = context.getString(R.string.run_screen_deeplink).toUri()
+        }.let {
+            TaskStackBuilder.create(context).run {
+                addNextIntentWithParentStack(it)
+                getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE)
+            }
+        }
+
     val baseNotification: NotificationCompat.Builder
         get() = NotificationCompat.Builder(context, RUN_TRACKING_NOTIFICATION_CHANNEL_ID)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .setContentText(durationInMillis.toStopwatchFormat())
+            .setContentIntent(showNewRunScreenPendingIntent)
             .addAction(runTrackingNotificationAction)
-            //.setContentIntent(intentToRunScreen)
             .setSmallIcon(R.drawable.ic_launcher)
             .setWhen(System.currentTimeMillis())
             .setContentTitle("Running Time")

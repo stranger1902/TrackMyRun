@@ -32,8 +32,20 @@
             android:exported="true">
 
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <intent-filter>
+
+                <data android:host="@string/run_screen_domain_deeplink_1" />
+                <data android:host="@string/run_screen_domain_deeplink_2" />
+                <data android:scheme="https" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="android.intent.action.VIEW" />
             </intent-filter>
 
         </activity>
