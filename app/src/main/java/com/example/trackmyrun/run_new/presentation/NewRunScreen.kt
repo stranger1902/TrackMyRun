@@ -5,10 +5,12 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.saveable.rememberSaveable
+import com.example.trackmyrun.core.domain.model.RunModel
 import com.example.trackmyrun.core.domain.model.toLatLng
 import com.google.android.gms.maps.model.CameraPosition
 import androidx.compose.foundation.layout.fillMaxWidth
 import com.google.android.gms.maps.CameraUpdateFactory
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.layout.fillMaxSize
 import com.google.android.gms.maps.model.LatLngBounds
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,14 +36,17 @@ import kotlin.uuid.ExperimentalUuidApi
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.async
 import android.widget.Toast
 import kotlin.uuid.Uuid
 
 @OptIn(MapsComposeExperimentalApi::class, ExperimentalUuidApi::class)
 @Composable
 fun NewRunScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToRunDetailScreen: (run: RunModel) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -52,6 +57,8 @@ fun NewRunScreen(
         val currentRun by viewModel.state.collectAsStateWithLifecycle()
 
         val cameraPositionState = rememberCameraPositionState()
+
+        val coroutineScope = rememberCoroutineScope()
 
         val context = LocalContext.current
 
@@ -119,14 +126,35 @@ fun NewRunScreen(
                         )
                     }
 
-                    val snapshot = map.awaitSnapshot()
+                    val run = RunModel(
+                        startTimestamp = System.currentTimeMillis() - currentRun.timeElapsedMillis,
+                        durationMillis = currentRun.timeElapsedMillis,
+                        distanceMeters = currentRun.distanceMeters,
+                        kcalBurned = currentRun.kcalBurned,
+                        avgSpeedMs = currentRun.avgSpeedMs,
+                        id = Uuid.random().toHexString()
+                    )
 
-                    snapshot?.let {
-                        viewModel.saveSnapshot(it, Uuid.random().toHexString())
+                    coroutineScope.launch {
+
+                        map.awaitSnapshot()?.let {
+
+                            val deferredResult = async {
+                                viewModel.saveSnapshot(it, run.id)
+                                delay(3000)
+                            }
+
+                            viewModel.saveRun(run)
+
+                            // i need to wait snapshot saving is completed before to navigate to RunDetailScreen, otherwise, it will be partially showed..
+                            deferredResult.await()
+
+                            viewModel.stopRunning()
+                            takeSnapshot = false
+
+                            onNavigateToRunDetailScreen(run)
+                        }
                     }
-
-                    viewModel.stopRunning()
-                    takeSnapshot = false
                 }
             }
 

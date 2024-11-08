@@ -1,7 +1,10 @@
 package com.example.trackmyrun.run_new.presentation
 
 import com.example.trackmyrun.service.data.repository.RunTrackingManager
+import com.example.trackmyrun.core.data.database.dao.RunDao
 import com.example.trackmyrun.core.utils.FileImageManager
+import com.example.trackmyrun.core.domain.model.RunModel
+import com.example.trackmyrun.core.domain.model.toEntity
 import com.example.trackmyrun.service.RunTrackingService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +20,8 @@ import javax.inject.Inject
 class NewRunViewModel @Inject constructor(
     private val runTrackingManager: RunTrackingManager,
     @ApplicationContext private val context: Context,
-    private val fileImageManager: FileImageManager
+    private val fileImageManager: FileImageManager,
+    private val runDao: RunDao
 ): ViewModel() {
 
     val state = runTrackingManager.runTrackingState
@@ -46,6 +50,12 @@ class NewRunViewModel @Inject constructor(
     fun saveSnapshot(snapshot: Bitmap, filename: String) {
         viewModelScope.launch {
             fileImageManager.saveImage(snapshot, filename)
+        }
+    }
+
+    fun saveRun(run: RunModel) {
+        viewModelScope.launch {
+            runDao.insertRun(run.toEntity())
         }
     }
 
