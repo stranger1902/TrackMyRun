@@ -48,7 +48,7 @@ import android.graphics.Bitmap
 @Composable
 fun RunItem(
     modifier: Modifier = Modifier,
-    onNavigateToRunDetail: (run: RunModel) -> Unit,
+    onNavigateToRunDetailScreen: (run: RunModel) -> Unit,
     snapshot: suspend () -> Deferred<Bitmap?>,
     item: RunModel
 ) {
@@ -62,7 +62,7 @@ fun RunItem(
         horizontalArrangement = Arrangement.Center,
         modifier = modifier
             .clickable {
-                onNavigateToRunDetail(item)
+                onNavigateToRunDetailScreen(item)
             }
     ) {
 
@@ -194,7 +194,7 @@ fun RunItem(
 fun RunItemPreview() {
     MaterialTheme {
         RunItem(
-            onNavigateToRunDetail = {
+            onNavigateToRunDetailScreen = {
 
             },
             snapshot = {

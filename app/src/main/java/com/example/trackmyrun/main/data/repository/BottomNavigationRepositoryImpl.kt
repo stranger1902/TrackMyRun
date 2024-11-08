@@ -16,7 +16,7 @@ class BottomNavigationRepositoryImpl: BottomNavigationRepository {
     override fun getBottomNavigationItems(): List<BottomNavigationItem> = listOf(
 
         BottomNavigationItem(
-            route = BottomNavigationDestination.HomeGraph,
+            route = BottomNavigationDestination.HomeScreen,
             unSelectedIcon = Icons.Outlined.Home,
             selectedIcon = Icons.Filled.Home,
             title = "Home"

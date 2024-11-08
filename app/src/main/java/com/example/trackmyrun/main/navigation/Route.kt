@@ -5,6 +5,12 @@ import kotlinx.serialization.Serializable
 sealed class MainDestination {
 
     @Serializable
+    data class RunDetailScreen(
+        val isFromNewRun: Boolean,
+        val runId: String
+    ): MainDestination()
+
+    @Serializable
     data object NewRunScreen: MainDestination()
 
     @Serializable
@@ -23,7 +29,7 @@ sealed class BottomNavigationDestination {
     data object ProfileScreen: BottomNavigationDestination()
 
     @Serializable
-    data object HomeGraph: BottomNavigationDestination()
+    data object HomeScreen: BottomNavigationDestination()
 }
 
 @Serializable

@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onNavigateToRunDetail: (run: RunModel) -> Unit
+    onNavigateToRunDetailScreen: (run: RunModel) -> Unit
 ) {
 
     val viewModel = hiltViewModel<HomeViewModel>()
@@ -86,8 +86,8 @@ fun HomeScreen(
             itemContent = { item ->
                 RunItem(
                     item = item,
-                    onNavigateToRunDetail = {
-                        onNavigateToRunDetail(item)
+                    onNavigateToRunDetailScreen = {
+                        onNavigateToRunDetailScreen(item)
                     },
                     snapshot = {
                         viewModel.loadImage(item.id)
