@@ -3,6 +3,7 @@ package com.example.trackmyrun.service.di
 import com.example.trackmyrun.service.data.repository.ServiceNotificationManager
 import com.example.trackmyrun.service.data.repository.GpsLocationManager
 import com.example.trackmyrun.service.data.repository.RunTrackingManager
+import com.example.trackmyrun.service.data.repository.CountdownManager
 import com.example.trackmyrun.service.data.repository.TimerManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.google.android.gms.location.LocationServices
@@ -41,6 +42,12 @@ object ServiceModule {
             timerManager = timerManager,
             userManager = userManager
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideCountdownManager(): CountdownManager {
+        return CountdownManager()
     }
 
     @Provides

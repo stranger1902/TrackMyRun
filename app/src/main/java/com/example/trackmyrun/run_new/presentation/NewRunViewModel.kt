@@ -1,12 +1,14 @@
 package com.example.trackmyrun.run_new.presentation
 
 import com.example.trackmyrun.service.data.repository.RunTrackingManager
+import com.example.trackmyrun.service.data.repository.CountdownManager
 import com.example.trackmyrun.core.data.database.dao.RunDao
 import com.example.trackmyrun.core.utils.FileImageManager
 import com.example.trackmyrun.core.domain.model.RunModel
 import com.example.trackmyrun.core.domain.model.toEntity
 import com.example.trackmyrun.service.RunTrackingService
 import dagger.hilt.android.qualifiers.ApplicationContext
+import com.example.trackmyrun.core.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.ViewModel
@@ -21,16 +23,25 @@ class NewRunViewModel @Inject constructor(
     private val runTrackingManager: RunTrackingManager,
     @ApplicationContext private val context: Context,
     private val fileImageManager: FileImageManager,
+    private val countdownManager: CountdownManager,
     private val runDao: RunDao
 ): ViewModel() {
+
+    val countdownIsRunning = countdownManager.isRunning
+    val countdown = countdownManager.countdown
 
     val state = runTrackingManager.runTrackingState
 
     fun startRunning() {
-        Intent(context, RunTrackingService::class.java).apply {
-            action = RunTrackingService.START_RUN_TRACKING
-            context.startForegroundService(this)
-        }
+        if (!countdownIsRunning.value && countdown.value == 0)
+            skipCountdown()
+        else
+            countdownManager.startCountdown(
+                initialValue = Constants.RUN_COUNTDOWN_INITIAL_VALUE,
+                onCountdownEnd = {
+                    skipCountdown()
+                }
+            )
     }
 
     fun pauseRunning() {
@@ -44,6 +55,17 @@ class NewRunViewModel @Inject constructor(
         Intent(context, RunTrackingService::class.java).apply {
             action = RunTrackingService.STOP_RUN_TRACKING
             context.startService(this)
+        }.also {
+            countdownManager.resetCountdown()
+        }
+    }
+
+    fun skipCountdown() {
+        countdownManager.skipCountdown {
+            Intent(context, RunTrackingService::class.java).apply {
+                action = RunTrackingService.START_RUN_TRACKING
+                context.startForegroundService(this)
+            }
         }
     }
 

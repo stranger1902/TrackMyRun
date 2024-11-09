@@ -1,5 +1,6 @@
 package com.example.trackmyrun.run_new.presentation
 
+import com.example.trackmyrun.run_new.presentation.component.CountdownIndicator
 import com.example.trackmyrun.run_new.presentation.component.NewRunController
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.MapsComposeExperimentalApi
@@ -28,6 +29,7 @@ import com.google.maps.android.compose.MapType
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.AlertDialog
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,6 +57,8 @@ fun NewRunScreen(
 
         val viewModel = hiltViewModel<NewRunViewModel>()
 
+        val countdownIsRunning by viewModel.countdownIsRunning.collectAsStateWithLifecycle()
+        val countdown by viewModel.countdown.collectAsStateWithLifecycle()
         val currentRun by viewModel.state.collectAsStateWithLifecycle()
 
         val cameraPositionState = rememberCameraPositionState()
@@ -156,9 +160,9 @@ fun NewRunScreen(
                             deferredResult.await()
 
                             viewModel.stopRunning()
-                            takeSnapshot = false
 
                             onNavigateToRunDetailScreen(run)
+                            // takeSnapshot = false
                         }
                     }
                 }
@@ -172,30 +176,47 @@ fun NewRunScreen(
             }
         }
 
-        NewRunController(
-            currentRun = currentRun,
-            onStartClick = {
-                if (!isMapLoaded)
-                    Toast.makeText(context, "Attendere che la mappa sia completamente caricata", Toast.LENGTH_SHORT).show()
-                else
-                    viewModel.startRunning()
-            },
-            onPauseClick = {
-                viewModel.pauseRunning()
-            },
-            onStopClick = {
-                if (currentRun.pathPointList.isEmpty()) {
-                    Toast.makeText(context, "Iniziare la corsa", Toast.LENGTH_SHORT).show()
-                } else {
-                    viewModel.pauseRunning()
-                    takeSnapshot = true
+        if (countdownIsRunning)
+            AlertDialog(
+                onDismissRequest = { },
+                confirmButton = { },
+                text = {
+                    CountdownIndicator(
+                        maxIndicatorValue = Constants.RUN_COUNTDOWN_INITIAL_VALUE,
+                        countdown = countdown,
+                        onSkipTimerClick = {
+                            viewModel.skipCountdown()
+                        },
+                        size = 250.dp
+                    )
                 }
-            },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .offset(y = (-32).dp)
-                .padding(16.dp)
-                .fillMaxWidth()
-        )
+            )
+
+        if (!takeSnapshot)
+            NewRunController(
+                currentRun = currentRun,
+                onStartClick = {
+                    if (!isMapLoaded)
+                        Toast.makeText(context, "Attendere che la mappa sia completamente caricata", Toast.LENGTH_SHORT).show()
+                    else
+                        viewModel.startRunning()
+                },
+                onPauseClick = {
+                    viewModel.pauseRunning()
+                },
+                onStopClick = {
+                    if (currentRun.pathPointList.isEmpty()) {
+                        Toast.makeText(context, "Iniziare la corsa", Toast.LENGTH_SHORT).show()
+                    } else {
+                        viewModel.pauseRunning()
+                        takeSnapshot = true
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .offset(y = (-32).dp)
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            )
     }
 }
