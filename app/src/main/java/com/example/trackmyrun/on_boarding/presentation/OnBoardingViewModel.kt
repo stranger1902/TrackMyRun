@@ -1,8 +1,6 @@
 package com.example.trackmyrun.on_boarding.presentation
 
 import com.example.trackmyrun.on_boarding.domain.repository.OnBoardingRepository
-import com.example.trackmyrun.core.utils.Constants.Companion.MAX_HEIGHT_CM
-import com.example.trackmyrun.core.utils.Constants.Companion.MAX_WEIGHT_KG
 import com.example.trackmyrun.core.domain.model.UserModel
 import com.example.trackmyrun.core.utils.UserManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,11 +40,11 @@ class OnBoardingViewModel @Inject constructor(
     fun checkUser(): Boolean = _currentUser.value.name != "" && _currentUser.value.weight != 0 && _currentUser.value.height != 0
 
     fun saveWeight(weight: Int) {
-        _currentUser.value = _currentUser.value.copy(weight = weight.coerceAtMost(MAX_WEIGHT_KG))
+        _currentUser.value = _currentUser.value.copy(weight = weight)
     }
 
     fun saveHeight(height: Int) {
-        _currentUser.value = _currentUser.value.copy(height = height.coerceAtMost(MAX_HEIGHT_CM))
+        _currentUser.value = _currentUser.value.copy(height = height)
     }
 
     fun saveName(name: String) {

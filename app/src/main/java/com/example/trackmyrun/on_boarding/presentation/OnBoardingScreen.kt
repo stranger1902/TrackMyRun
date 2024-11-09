@@ -20,6 +20,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.Button
 import androidx.compose.runtime.getValue
@@ -52,96 +53,101 @@ fun OnBoardingScreen(
         pagerState.animateScrollToPage(currentPage)
     }
 
-    Box(
+    Scaffold(
         modifier = modifier
-            .padding(16.dp)
-    ) {
+    ) { innerPadding ->
 
-        HorizontalPager(
-            userScrollEnabled = false,
-            state = pagerState,
-            modifier = Modifier
+        Box(
+            modifier = modifier
                 .fillMaxSize()
-        ) { page ->
-
-            when(page) {
-
-                0 -> FirstScreen(
-                    item = viewModel.onBoardingPageData[page],
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-
-                1 -> SecondScreen(
-                    item = viewModel.onBoardingPageData[page],
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-
-                2 -> ThirdScreen(
-                    item = viewModel.onBoardingPageData[page],
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-
-                3 -> FinalScreen(
-                    item = viewModel.onBoardingPageData[page],
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-
-                else -> throw RuntimeException("page $page is NOT valid")
-            }
-        }
-
-        PagerIndicator(
-            size = viewModel.onBoardingPageData.size,
-            currentPage = currentPage,
-            modifier = Modifier
-                .offset(y = -ButtonDefaults.MinHeight / 2)
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-        )
-
-        Row(
-            horizontalArrangement = if (currentPage != 0) Arrangement.SpaceBetween else Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp)
         ) {
 
-            if (currentPage != 0)
-                OutlinedButton(
-                    onClick = {
-                        viewModel.navigatePreviousPage()
-                    }
-                ) { Text(text = "Indietro") }
+            HorizontalPager(
+                userScrollEnabled = false,
+                state = pagerState,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) { page ->
 
-            Button(
-                onClick = {
+                when(page) {
 
-                    when(currentPage) {
+                    0 -> FirstScreen(
+                        item = viewModel.onBoardingPageData[page],
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
 
-                        viewModel.onBoardingPageData.size - 1 -> {
-                            onBoardingCompleted()
-                        }
+                    1 -> SecondScreen(
+                        item = viewModel.onBoardingPageData[page],
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
 
-                        1 -> {
-                            if (!viewModel.checkUser())
-                                Toast.makeText(context, "Compila tutti i campi", Toast.LENGTH_SHORT).show()
-                            else {
-                                viewModel.saveUserInPreferences()
-                                viewModel.navigateNextPage()
-                            }
-                        }
+                    2 -> ThirdScreen(
+                        item = viewModel.onBoardingPageData[page],
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
 
-                        else -> viewModel.navigateNextPage()
-                    }
+                    3 -> FinalScreen(
+                        item = viewModel.onBoardingPageData[page],
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
+
+                    else -> throw RuntimeException("page $page is NOT valid")
                 }
-            ) { Text(text = if (currentPage != viewModel.onBoardingPageData.size - 1) "Avanti" else "Iniziamo") }
+            }
+
+            PagerIndicator(
+                size = viewModel.onBoardingPageData.size,
+                currentPage = currentPage,
+                modifier = Modifier
+                    .offset(y = -ButtonDefaults.MinHeight / 2)
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+            )
+
+            Row(
+                horizontalArrangement = if (currentPage != 0) Arrangement.SpaceBetween else Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+            ) {
+
+                if (currentPage != 0)
+                    OutlinedButton(
+                        onClick = {
+                            viewModel.navigatePreviousPage()
+                        }
+                    ) { Text(text = "Indietro") }
+
+                Button(
+                    onClick = {
+
+                        when(currentPage) {
+
+                            viewModel.onBoardingPageData.size - 1 -> {
+                                onBoardingCompleted()
+                            }
+
+                            1 -> {
+                                if (!viewModel.checkUser())
+                                    Toast.makeText(context, "Compila tutti i campi", Toast.LENGTH_SHORT).show()
+                                else {
+                                    viewModel.saveUserInPreferences()
+                                    viewModel.navigateNextPage()
+                                }
+                            }
+
+                            else -> viewModel.navigateNextPage()
+                        }
+                    }
+                ) { Text(text = if (currentPage != viewModel.onBoardingPageData.size - 1) "Avanti" else "Iniziamo") }
+            }
         }
-
     }
-
 }

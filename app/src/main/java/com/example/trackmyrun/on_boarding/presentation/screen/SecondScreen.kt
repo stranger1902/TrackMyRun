@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.material3.OutlinedTextField
+import com.example.trackmyrun.core.utils.Constants
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -47,7 +48,7 @@ fun SecondScreen(
             painter = painterResource(item.resImage),
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(5/4f)
+                .aspectRatio(19/10f)
         )
 
         Spacer(Modifier.height(40.dp))
@@ -110,7 +111,7 @@ fun SecondScreen(
                     keyboardType = KeyboardType.Number
                 ),
                 onValueChange = {
-                    viewModel.saveHeight(it.toInt())
+                    viewModel.saveHeight(if (it == "") 0 else it.toInt().coerceAtMost(Constants.MAX_HEIGHT_CM))
                 }
             )
 
@@ -131,7 +132,7 @@ fun SecondScreen(
                     keyboardType = KeyboardType.Number
                 ),
                 onValueChange = {
-                    viewModel.saveWeight(it.toInt())
+                    viewModel.saveWeight(if (it == "") 0 else it.toInt().coerceAtMost(Constants.MAX_WEIGHT_KG))
                 }
             )
         }
