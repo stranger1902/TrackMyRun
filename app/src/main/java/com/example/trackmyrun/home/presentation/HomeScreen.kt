@@ -4,6 +4,7 @@ import com.example.trackmyrun.home.presentation.component.PullToRefreshLazyColum
 import com.example.trackmyrun.home.presentation.component.RunItem
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.material3.ExperimentalMaterial3Api
 import com.example.trackmyrun.core.domain.model.RunModel
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +16,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.ui.res.painterResource
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.Image
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.material3.Card
@@ -23,7 +26,9 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.trackmyrun.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -50,6 +55,11 @@ fun HomeScreen(
         }
     }
 
+    LaunchedEffect(isEndScrollReached, isRefreshing) {
+        if (!state.isLoading && !state.isEndReached && isEndScrollReached)
+            viewModel.loadNextPage()
+    }
+
     Column(
         modifier = modifier
             .padding(horizontal = 16.dp)
@@ -72,17 +82,11 @@ fun HomeScreen(
             )
         }
 
-        LaunchedEffect(isEndScrollReached, isRefreshing) {
-            if (!state.isLoading && !state.isEndReached && isEndScrollReached)
-                viewModel.loadNextPage()
-        }
-
         PullToRefreshLazyColumn(
             lazyListState = lazyListState,
             isRefreshing = isRefreshing,
             items = state.items,
-            modifier = Modifier
-                .fillMaxSize(),
+            onRefresh = { },
             itemContent = { item ->
                 RunItem(
                     item = item,
@@ -96,9 +100,16 @@ fun HomeScreen(
                         .fillMaxWidth()
                 )
             },
-            onRefresh = {
-
-            }
+            emptyContent = {
+                Image(
+                    painter = painterResource(R.drawable.empty_list),
+                    contentDescription = "empty list",
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+            },
+            modifier = Modifier
+                .fillMaxSize()
         )
     }
 }

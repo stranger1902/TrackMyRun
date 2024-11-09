@@ -2,6 +2,7 @@ package com.example.trackmyrun.home.presentation.component
 
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,15 +21,15 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun <Item> PullToRefreshLazyColumn(
     modifier: Modifier = Modifier,
+    pullToRefreshState: PullToRefreshState = rememberPullToRefreshState(),
     lazyListState: LazyListState = rememberLazyListState(),
     enabled: Boolean = false,
     isRefreshing: Boolean,
     items: List<Item>,
     itemContent: @Composable (item: Item) -> Unit,
+    emptyContent: @Composable () -> Unit,
     onRefresh: () -> Unit
 ) {
-
-    val pullToRefreshState = rememberPullToRefreshState()
 
     Box (
         modifier = modifier
@@ -39,16 +40,20 @@ fun <Item> PullToRefreshLazyColumn(
                 enabled = enabled
             )
     ) {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            state = lazyListState,
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            items(items) { item ->
-                itemContent(item)
+
+        if (!isRefreshing && items.isEmpty())
+            emptyContent()
+        else
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                state = lazyListState,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                items(items) { item ->
+                    itemContent(item)
+                }
             }
-        }
 
         PullToRefreshDefaults.Indicator(
             isRefreshing = isRefreshing,

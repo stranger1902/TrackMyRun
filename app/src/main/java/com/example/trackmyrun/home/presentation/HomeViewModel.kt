@@ -54,22 +54,11 @@ class HomeViewModel @Inject constructor(
         initialKey = 0
     )
 
-//    init {
-//        viewModelScope.launch {
-//            repeat(25) {
-//                runRepository.insertRun(
-//                    RunModel(
-//                        startTimestamp = System.currentTimeMillis() + (it * 1000),
-//                        durationMillis = it * 3600000L,
-//                        distanceMeters = it * 1000f,
-//                        avgSpeedMs = it.toFloat(),
-//                        kcalBurned = it * 100f,
-//                        id = it.toString()
-//                    )
-//                )
-//            }
-//        }
-//    }
+    init {
+        viewModelScope.launch {
+            loadNextPage()
+        }
+    }
 
     fun loadNextPage() {
         viewModelScope.launch {
