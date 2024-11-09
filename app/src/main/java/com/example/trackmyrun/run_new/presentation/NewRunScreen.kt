@@ -28,6 +28,7 @@ import com.google.maps.android.compose.MapType
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.layout.Box
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -98,6 +99,11 @@ fun NewRunScreen(
                 )
             }
         }
+
+        // disable back-press button while new run is saving..
+        BackHandler(
+            enabled = takeSnapshot
+        ) {  }
 
         GoogleMap(
             cameraPositionState = cameraPositionState,
