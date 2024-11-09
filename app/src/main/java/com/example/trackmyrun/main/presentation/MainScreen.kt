@@ -67,7 +67,7 @@ fun MainScreen(
                 },
                 title = {
                     Text(
-                        fontSize = 40.sp,
+                        fontSize = 36.sp,
                         text = buildAnnotatedString {
                             append(" Track")
                             withStyle(

@@ -1,6 +1,6 @@
 package com.example.trackmyrun.home.presentation
 
-import com.example.trackmyrun.home.presentation.component.PullToRefreshLazyColumn
+import com.example.trackmyrun.core.presentation.PullToRefreshLazyColumn
 import com.example.trackmyrun.home.presentation.component.RunItem
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,7 +37,7 @@ fun HomeScreen(
 
     val viewModel = hiltViewModel<HomeViewModel>()
 
-    val user = viewModel.currentUser.collectAsStateWithLifecycle()
+    val user by viewModel.currentUser.collectAsStateWithLifecycle()
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -71,7 +71,7 @@ fun HomeScreen(
                 .fillMaxWidth()
         ) {
             Text(
-                text = "Bentornato ${user.value.name}!",
+                text = "Bentornato ${user.name}!",
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 fontSize = 24.sp,

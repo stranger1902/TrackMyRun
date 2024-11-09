@@ -1,4 +1,4 @@
-package com.example.trackmyrun.home.presentation.component
+package com.example.trackmyrun.core.presentation
 
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
