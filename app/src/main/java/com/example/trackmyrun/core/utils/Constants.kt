@@ -18,9 +18,12 @@ class Constants {
         const val GPS_FASTEST_INTERVAL_MILLIS = 1000L
         const val GPS_INTERVAL_MILLIS = 3000L
 
+        const val RUN_COUNTDOWN_INITIAL_VALUE = 15
+
         const val MAX_WEIGHT_KG = 600
         const val MAX_HEIGHT_CM = 250
 
+        const val MAPS_SNAPSHOT_PADDING = 150
         const val MAPS_SNAPSHOT_QUALITY = 80
         const val POLYLINE_WIDTH = 32f
         const val MAPS_ZOOM = 17f
