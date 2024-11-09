@@ -2,6 +2,7 @@ package com.example.trackmyrun.core.di
 
 import com.example.trackmyrun.core.data.database.RunTrackingDatabase
 import com.example.trackmyrun.core.data.database.dao.RunDao
+import com.example.trackmyrun.core.utils.PermissionManager
 import com.example.trackmyrun.core.utils.FileImageManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.example.trackmyrun.core.utils.UserManager
@@ -26,6 +27,12 @@ object OnBoardingModule {
             name = Constants.RUN_TRACKING_DB_NAME,
             context = context
         ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun providePermissionManager(@ApplicationContext context: Context): PermissionManager {
+        return PermissionManager(context)
     }
 
     @Provides

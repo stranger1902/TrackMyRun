@@ -3,8 +3,9 @@ package com.example.trackmyrun
 import com.example.trackmyrun.on_boarding.navigation.registerOnBoardingGraph
 import com.example.trackmyrun.on_boarding.navigation.OnBoardingGraph
 import com.example.trackmyrun.main.navigation.registerMainGraph
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.trackmyrun.core.utils.PermissionManager
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.compose.runtime.saveable.rememberSaveable
 import com.example.trackmyrun.core.theme.TrackMyRunTheme
 import androidx.navigation.compose.rememberNavController
 import com.example.trackmyrun.main.navigation.MainGraph
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import com.example.trackmyrun.core.utils.UserManager
 import com.example.trackmyrun.core.utils.Constants
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.material3.AlertDialog
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.lifecycle.repeatOnLifecycle
@@ -24,9 +24,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Button
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.datastore.core.DataStore
-import android.content.pm.PackageManager
 import androidx.compose.material3.Text
 import androidx.lifecycle.Lifecycle
 import androidx.compose.ui.Modifier
@@ -36,8 +34,6 @@ import android.content.Context
 import android.content.Intent
 import javax.inject.Inject
 import android.os.Bundle
-import android.os.Build
-import android.Manifest
 import android.net.Uri
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(Constants.USER_DATASTORE_KEY)
@@ -45,6 +41,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(Constants.
 @AndroidEntryPoint
 class MainActivity: ComponentActivity() {
 
+    @Inject lateinit var permissionManager: PermissionManager
     @Inject lateinit var userManager: UserManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,30 +50,16 @@ class MainActivity: ComponentActivity() {
 
         enableEdgeToEdge()
 
-        val permissions = mutableListOf(
-            // Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.FOREGROUND_SERVICE
-        ).apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                add(Manifest.permission.POST_NOTIFICATIONS)
-        }.toList()
-
         setContent {
 
-            var permissionGranted by rememberSaveable {
-                mutableStateOf(true)
-            }
+            val permissionGranted by permissionManager.permissionGranted.collectAsStateWithLifecycle()
 
             val coroutineScope = rememberCoroutineScope()
 
             LaunchedEffect(Unit) {
                 coroutineScope.launch {
                     repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                        permissions.forEach { permission ->
-                            permissionGranted = permissionGranted && checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
-                        }
+                        permissionManager.checkPermissions()
                     }
                 }
             }
@@ -130,5 +113,4 @@ class MainActivity: ComponentActivity() {
             }
         }
     }
-
 }
