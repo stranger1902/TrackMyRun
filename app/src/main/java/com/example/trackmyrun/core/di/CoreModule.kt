@@ -1,6 +1,7 @@
 package com.example.trackmyrun.core.di
 
 import com.example.trackmyrun.core.data.database.RunTrackingDatabase
+import com.example.trackmyrun.core.data.database.dao.FriendDao
 import com.example.trackmyrun.core.data.database.dao.RunDao
 import com.example.trackmyrun.core.utils.PermissionManager
 import com.example.trackmyrun.core.utils.FileImageManager
@@ -45,6 +46,12 @@ object OnBoardingModule {
     @Singleton
     fun provideUserManager(@ApplicationContext context: Context): UserManager {
         return UserManager(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFriendDao(runTrackingDatabase: RunTrackingDatabase): FriendDao {
+        return runTrackingDatabase.friendDao()
     }
 
     @Provides

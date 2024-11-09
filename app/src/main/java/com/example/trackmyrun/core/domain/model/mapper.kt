@@ -1,5 +1,6 @@
 package com.example.trackmyrun.core.domain.model
 
+import com.example.trackmyrun.core.data.local.entity.FriendEntity
 import com.example.trackmyrun.core.data.local.entity.RunEntity
 import com.google.android.gms.maps.model.LatLng
 
@@ -20,5 +21,17 @@ fun RunModel.toEntity(): RunEntity = RunEntity(
     durationMillis = durationMillis,
     avgSpeedMs = avgSpeedMs,
     kcalBurned = kcalBurned,
+    id = id
+)
+
+fun FriendEntity.toModel(): FriendModel = FriendModel(
+    startTimestamp = startTimestamp,
+    name = name,
+    id = id
+)
+
+fun FriendModel.toModel(): FriendEntity = FriendEntity(
+    startTimestamp = startTimestamp,
+    name = name,
     id = id
 )
