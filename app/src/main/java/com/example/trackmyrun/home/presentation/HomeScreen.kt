@@ -6,10 +6,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.example.trackmyrun.core.domain.model.RunModel
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.font.FontWeight
@@ -17,11 +20,14 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.res.painterResource
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -32,7 +38,8 @@ import com.example.trackmyrun.R
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onNavigateToRunDetailScreen: (run: RunModel) -> Unit
+    onNavigateToRunDetailScreen: (run: RunModel) -> Unit,
+    onFloatingButtonClick: () ->Unit
 ) {
 
     val viewModel = hiltViewModel<HomeViewModel>()
@@ -60,56 +67,76 @@ fun HomeScreen(
             viewModel.loadNextPage()
     }
 
-    Column(
+    Scaffold(
+        contentWindowInsets = WindowInsets(0,0,0,0),
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    onFloatingButtonClick()
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "new run"
+                )
+            }
+        },
         modifier = modifier
             .padding(horizontal = 16.dp)
-    ) {
+    ) { innerPadding ->
 
-        Card(
-            modifier = Modifier
-                .padding(vertical = 16.dp)
-                .fillMaxWidth()
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            Text(
-                text = "Bentornato ${user.name}!",
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                fontSize = 24.sp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .basicMarquee()
-            )
-        }
 
-        PullToRefreshLazyColumn(
-            lazyListState = lazyListState,
-            isRefreshing = isRefreshing,
-            items = state.items,
-            onRefresh = { },
-            itemContent = { item ->
-                RunItem(
-                    item = item,
-                    onNavigateToRunDetailScreen = {
-                        onNavigateToRunDetailScreen(item)
-                    },
-                    snapshot = {
-                        viewModel.loadImage(item.id)
-                    },
+            Card(
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Bentornato ${user.name}!",
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    fontSize = 24.sp,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(16.dp)
+                        .basicMarquee()
                 )
-            },
-            emptyContent = {
-                Image(
-                    painter = painterResource(R.drawable.empty_list),
-                    contentDescription = "empty list",
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-            },
-            modifier = Modifier
-                .fillMaxSize()
-        )
+            }
+
+            PullToRefreshLazyColumn(
+                lazyListState = lazyListState,
+                isRefreshing = isRefreshing,
+                items = state.items,
+                onRefresh = { },
+                itemContent = { item ->
+                    RunItem(
+                        item = item,
+                        onNavigateToRunDetailScreen = {
+                            onNavigateToRunDetailScreen(item)
+                        },
+                        snapshot = {
+                            viewModel.loadImage(item.id)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                },
+                emptyContent = {
+                    Image(
+                        painter = painterResource(R.drawable.empty_list),
+                        contentDescription = "empty list",
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+        }
     }
 }

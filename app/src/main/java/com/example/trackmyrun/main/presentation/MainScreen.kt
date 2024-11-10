@@ -5,12 +5,10 @@ import com.example.trackmyrun.main.navigation.BottomNavigationGraph
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.navigation.compose.rememberNavController
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.foundation.layout.height
@@ -20,7 +18,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.ui.res.painterResource
-import androidx.compose.material.icons.Icons
 import androidx.navigation.NavHostController
 import androidx.compose.material3.TopAppBar
 import androidx.navigation.compose.NavHost
@@ -41,8 +38,7 @@ import com.example.trackmyrun.R
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    mainGraphNavController: NavHostController,
-    onFloatingButtonClick: () ->Unit
+    mainGraphNavController: NavHostController
 ) {
 
     val viewModel = hiltViewModel<MainViewModel>()
@@ -82,18 +78,6 @@ fun MainScreen(
                     )
                 }
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    onFloatingButtonClick()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "new run"
-                )
-            }
         },
         bottomBar = {
             BottomAppBar(

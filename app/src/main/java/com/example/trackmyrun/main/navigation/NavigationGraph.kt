@@ -26,10 +26,7 @@ fun NavGraphBuilder.registerMainGraph(navController: NavHostController) {
             MainScreen(
                 mainGraphNavController = navController,
                 modifier = Modifier
-                    .fillMaxSize(),
-                onFloatingButtonClick = {
-                    navController.navigate(MainDestination.NewRunScreen)
-                }
+                    .fillMaxSize()
             )
         }
 
@@ -111,7 +108,10 @@ fun NavGraphBuilder.registerBottomNavigationGraph(mainGraphNavController: NavHos
                     )
                 },
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxSize(),
+                onFloatingButtonClick = {
+                    mainGraphNavController.navigate(MainDestination.NewRunScreen)
+                }
             )
         }
     }
