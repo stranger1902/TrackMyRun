@@ -8,9 +8,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.example.trackmyrun.core.domain.model.RunModel
 import com.example.trackmyrun.core.domain.model.toLatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.CameraPosition
 import androidx.compose.foundation.layout.fillMaxWidth
 import com.google.android.gms.maps.CameraUpdateFactory
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.layout.fillMaxSize
 import com.google.android.gms.maps.model.LatLngBounds
@@ -40,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import com.example.trackmyrun.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.async
 import android.widget.Toast
@@ -65,6 +68,8 @@ fun NewRunScreen(
 
         val coroutineScope = rememberCoroutineScope()
 
+        val isDarkMode = isSystemInDarkTheme()
+
         val context = LocalContext.current
 
         var takeSnapshot by rememberSaveable {
@@ -85,9 +90,16 @@ fun NewRunScreen(
             )
         }
 
+        val mapsStyle: MapStyleOptions? by remember {
+            mutableStateOf(
+                if (isDarkMode) MapStyleOptions.loadRawResourceStyle(context, R.raw.maps_night_mode) else null
+            )
+        }
+
         val properties by remember {
             mutableStateOf(
                 MapProperties(
+                    mapStyleOptions = mapsStyle,
                     isMyLocationEnabled = true,
                     mapType = MapType.NORMAL
                 )
