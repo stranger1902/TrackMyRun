@@ -1,6 +1,6 @@
 package com.example.trackmyrun.main.navigation
 
-import com.example.trackmyrun.statistics.presentation.StatisticsScreen
+import com.example.trackmyrun.run_statistics.presentation.StatisticsScreen
 import com.example.trackmyrun.run_detail.presentation.RunDetailScreen
 import com.example.trackmyrun.profile.presentation.ProfileScreen
 import com.example.trackmyrun.run_new.presentation.NewRunScreen

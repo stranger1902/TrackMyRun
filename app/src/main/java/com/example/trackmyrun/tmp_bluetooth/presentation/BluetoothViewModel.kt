@@ -133,9 +133,9 @@ class BluetoothViewModel @Inject constructor(
     }.launchIn(viewModelScope)
 
     override fun onCleared() {
-
-        super.onCleared()
-
-        bluetoothController.release()
+        super.onCleared().also {
+            bluetoothController.release()
+        }
     }
+
 }

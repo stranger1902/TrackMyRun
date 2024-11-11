@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.size
@@ -56,13 +57,7 @@ fun StatisticsScreen(
             .verticalScroll(rememberScrollState())
     ) {
 
-        Text(
-            fontWeight = FontWeight.Bold,
-            text = "Statistiche",
-            fontSize = 32.sp,
-            modifier = Modifier
-                .padding(8.dp)
-        )
+        Spacer(modifier = Modifier.height(8.dp))
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -72,14 +67,14 @@ fun StatisticsScreen(
         ) {
 
             Text(
-                text = "corse totali",
+                text = "Corse totali",
                 fontSize = 16.sp
             )
 
             Text(
                 text = runStatistics?.let { "${it.totalRun}" } ?: "",
                 fontWeight = FontWeight.Bold,
-                fontSize = 32.sp,
+                fontSize = 40.sp,
                 modifier = Modifier
                     .conditional(runStatistics == null) {
                         shimmerEffect(1500)
@@ -113,7 +108,7 @@ fun StatisticsScreen(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = "distanza totale percorsa",
+                    text = "Distanza totale percorsa",
                     fontSize = 16.sp
                 )
             }
@@ -121,7 +116,7 @@ fun StatisticsScreen(
             Text(
                 text = runStatistics?.let { "${"%.3f".format(it.totalDistanceMeters.mToKm())} Km" } ?: "",
                 fontWeight = FontWeight.Bold,
-                fontSize = 32.sp,
+                fontSize = 36.sp,
                 modifier = Modifier
                     .conditional(runStatistics == null) {
                         shimmerEffect(1500)
@@ -155,7 +150,7 @@ fun StatisticsScreen(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = "durata totale",
+                    text = "Durata totale",
                     fontSize = 16.sp
                 )
             }
@@ -163,7 +158,7 @@ fun StatisticsScreen(
             Text(
                 text = runStatistics?.totalDurationMillis?.toStopwatchUserFormat() ?: "",
                 fontWeight = FontWeight.Bold,
-                fontSize = 32.sp,
+                fontSize = 36.sp,
                 modifier = Modifier
                     .conditional(runStatistics == null) {
                         shimmerEffect(1500)
@@ -197,7 +192,7 @@ fun StatisticsScreen(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = "velocità media totale",
+                    text = "Velocità media totale",
                     fontSize = 16.sp
                 )
             }
@@ -205,7 +200,7 @@ fun StatisticsScreen(
             Text(
                 text = runStatistics?.let { "${"%.2f".format(it.totalAvgSpeedMs.msToKmH())} Km/h" } ?: "",
                 fontWeight = FontWeight.Bold,
-                fontSize = 32.sp,
+                fontSize = 36.sp,
                 modifier = Modifier
                     .conditional(runStatistics == null) {
                         shimmerEffect(1500)
@@ -247,7 +242,7 @@ fun StatisticsScreen(
             Text(
                 text = runStatistics?.let { "${"%.2f".format(it.totalKcalBurned)} Kcal" } ?: "",
                 fontWeight = FontWeight.Bold,
-                fontSize = 32.sp,
+                fontSize = 36.sp,
                 modifier = Modifier
                     .conditional(runStatistics == null) {
                         shimmerEffect(1500)
