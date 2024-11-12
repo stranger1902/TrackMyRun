@@ -7,18 +7,18 @@ import com.example.trackmyrun.on_boarding.presentation.screen.FirstScreen
 import com.example.trackmyrun.on_boarding.presentation.screen.ThirdScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -57,18 +57,26 @@ fun OnBoardingScreen(
         modifier = modifier
     ) { innerPadding ->
 
-        Box(
+        Column (
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
         ) {
 
+            PagerIndicator(
+                size = viewModel.onBoardingPageData.size,
+                currentPage = currentPage,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+
             HorizontalPager(
                 userScrollEnabled = false,
                 state = pagerState,
                 modifier = Modifier
-                    .fillMaxSize()
+                    .weight(1f)
             ) { page ->
 
                 when(page) {
@@ -77,44 +85,42 @@ fun OnBoardingScreen(
                         item = viewModel.onBoardingPageData[page],
                         modifier = Modifier
                             .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(vertical = 16.dp)
                     )
 
                     1 -> SecondScreen(
                         item = viewModel.onBoardingPageData[page],
                         modifier = Modifier
                             .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(vertical = 16.dp)
                     )
 
                     2 -> ThirdScreen(
                         item = viewModel.onBoardingPageData[page],
                         modifier = Modifier
                             .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(vertical = 16.dp)
                     )
 
                     3 -> FinalScreen(
                         item = viewModel.onBoardingPageData[page],
                         modifier = Modifier
                             .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(vertical = 16.dp)
                     )
 
                     else -> throw RuntimeException("page $page is NOT valid")
                 }
             }
 
-            PagerIndicator(
-                size = viewModel.onBoardingPageData.size,
-                currentPage = currentPage,
-                modifier = Modifier
-                    .offset(y = -ButtonDefaults.MinHeight / 2)
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-            )
-
             Row(
                 horizontalArrangement = if (currentPage != 0) Arrangement.SpaceBetween else Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
                     .fillMaxWidth()
             ) {
 
