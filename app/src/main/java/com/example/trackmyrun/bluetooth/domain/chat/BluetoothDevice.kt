@@ -1,4 +1,4 @@
-package com.example.trackmyrun.tmp_bluetooth.domain.chat
+package com.example.trackmyrun.bluetooth.domain.chat
 
 typealias BluetoothDeviceDomain = BluetoothDevice
 

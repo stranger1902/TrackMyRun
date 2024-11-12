@@ -1,7 +1,7 @@
-package com.example.trackmyrun.tmp_bluetooth.presentation.component
+package com.example.trackmyrun.bluetooth.presentation.component
 
-import com.example.trackmyrun.tmp_bluetooth.domain.chat.BluetoothDeviceDomain
-import com.example.trackmyrun.tmp_bluetooth.presentation.BluetoothUiState
+import com.example.trackmyrun.bluetooth.domain.chat.BluetoothDeviceDomain
+import com.example.trackmyrun.bluetooth.presentation.BluetoothUiState
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
@@ -82,7 +82,7 @@ fun BluetoothDeviceList(
         item {
             Text(
                 fontWeight = FontWeight.Bold,
-                text = "Paired Devices",
+                text = "Dispositivi accoppiati",
                 fontSize = 24.sp,
                 modifier = Modifier
                     .padding(16.dp)
@@ -106,7 +106,7 @@ fun BluetoothDeviceList(
         item {
             Text(
                 fontWeight = FontWeight.Bold,
-                text = "Scanned Devices",
+                text = "Dispositivi trovati",
                 fontSize = 24.sp,
                 modifier = Modifier
                     .padding(16.dp)

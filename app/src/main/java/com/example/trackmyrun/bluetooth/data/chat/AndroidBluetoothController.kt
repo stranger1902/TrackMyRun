@@ -1,9 +1,9 @@
-package com.example.trackmyrun.tmp_bluetooth.data.chat
+package com.example.trackmyrun.bluetooth.data.chat
 
-import com.example.trackmyrun.tmp_bluetooth.domain.chat.BluetoothDeviceDomain
-import com.example.trackmyrun.tmp_bluetooth.domain.chat.BluetoothController
-import com.example.trackmyrun.tmp_bluetooth.domain.chat.ConnectionResult
-import com.example.trackmyrun.tmp_bluetooth.domain.chat.BluetoothMessage
+import com.example.trackmyrun.bluetooth.domain.chat.BluetoothDeviceDomain
+import com.example.trackmyrun.bluetooth.domain.chat.BluetoothController
+import com.example.trackmyrun.bluetooth.domain.chat.ConnectionResult
+import com.example.trackmyrun.bluetooth.domain.chat.BluetoothMessage
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import android.bluetooth.BluetoothServerSocket
@@ -98,31 +98,12 @@ class AndroidBluetoothController(
     private var currentClientSocket: BluetoothSocket? = null
 
     init {
-
         updatePairedDevices()
-
-        context.registerReceiver(
-            bluetoothStateReceiver,
-            IntentFilter().apply {
-                addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)
-                addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
-                addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
-            }
-        )
     }
 
     override fun startDiscovery() {
 
         if (!hasPermission(Manifest.permission.BLUETOOTH_SCAN)) return
-
-        context.registerReceiver(
-            foundDeviceReceiver,
-            IntentFilter().apply {
-                addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
-                addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED)
-                addAction(BluetoothDevice.ACTION_FOUND)
-            }
-        )
 
         updatePairedDevices()
 
@@ -249,6 +230,27 @@ class AndroidBluetoothController(
         currentServerSocket?.close()
         currentClientSocket = null
         currentServerSocket = null
+    }
+
+    override fun registerReceiver() {
+
+        context.registerReceiver(
+            bluetoothStateReceiver,
+            IntentFilter().apply {
+                addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)
+                addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
+                addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
+            }
+        )
+
+        context.registerReceiver(
+            foundDeviceReceiver,
+            IntentFilter().apply {
+                addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
+                addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED)
+                addAction(BluetoothDevice.ACTION_FOUND)
+            }
+        )
     }
 
     override fun release() {

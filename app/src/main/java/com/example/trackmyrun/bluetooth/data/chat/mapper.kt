@@ -1,7 +1,7 @@
-package com.example.trackmyrun.tmp_bluetooth.data.chat
+package com.example.trackmyrun.bluetooth.data.chat
 
-import com.example.trackmyrun.tmp_bluetooth.domain.chat.BluetoothDeviceDomain
-import com.example.trackmyrun.tmp_bluetooth.domain.chat.BluetoothMessage
+import com.example.trackmyrun.bluetooth.domain.chat.BluetoothDeviceDomain
+import com.example.trackmyrun.bluetooth.domain.chat.BluetoothMessage
 import android.bluetooth.BluetoothDevice
 import android.annotation.SuppressLint
 

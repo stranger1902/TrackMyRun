@@ -1,8 +1,8 @@
 package com.example.trackmyrun
 
 import com.example.trackmyrun.on_boarding.navigation.registerOnBoardingGraph
+import com.example.trackmyrun.bluetooth.domain.chat.BluetoothController
 import com.example.trackmyrun.on_boarding.navigation.OnBoardingGraph
-import androidx.activity.result.contract.ActivityResultContracts
 import com.example.trackmyrun.main.navigation.registerMainGraph
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.trackmyrun.core.utils.PermissionManager
@@ -22,8 +22,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.activity.ComponentActivity
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Button
 import androidx.compose.runtime.getValue
@@ -44,6 +42,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(Constants.
 @AndroidEntryPoint
 class MainActivity: ComponentActivity() {
 
+    @Inject lateinit var bluetoothController: BluetoothController
     @Inject lateinit var permissionManager: PermissionManager
     @Inject lateinit var userManager: UserManager
 
@@ -53,24 +52,26 @@ class MainActivity: ComponentActivity() {
 
         enableEdgeToEdge()
 
+        bluetoothController.registerReceiver()
+
+//        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+//
+//        if (!bluetoothManager.adapter.isEnabled) {
+//            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+//                /* We don't need to elaborate the result... */
+//            }.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+//        }
+
         setContent {
 
             val permissionGranted by permissionManager.permissionGranted.collectAsStateWithLifecycle()
-
-            val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
 
             val coroutineScope = rememberCoroutineScope()
 
             LaunchedEffect(Unit) {
                 coroutineScope.launch {
                     repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                        permissionManager.checkPermissions().also {
-                            if (!bluetoothManager.adapter.isEnabled) {
-                                registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                                    /* We don't need to elaborate the result... */
-                                }.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
-                            }
-                        }
+                        permissionManager.checkPermissions()
                     }
                 }
             }
@@ -124,4 +125,11 @@ class MainActivity: ComponentActivity() {
             }
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy().also {
+            bluetoothController.release()
+        }
+    }
+
 }

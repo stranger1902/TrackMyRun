@@ -1,10 +1,12 @@
-package com.example.trackmyrun.tmp_bluetooth.presentation.component
+package com.example.trackmyrun.bluetooth.presentation.component
 
-import com.example.trackmyrun.tmp_bluetooth.domain.chat.BluetoothMessage
+import com.example.trackmyrun.bluetooth.domain.chat.BluetoothMessage
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.Text
 import androidx.compose.ui.draw.clip
@@ -21,7 +23,8 @@ fun ChatMessage(
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .padding(16.dp)
+            .background(MaterialTheme.colorScheme.inverseOnSurface)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
 
         Text(

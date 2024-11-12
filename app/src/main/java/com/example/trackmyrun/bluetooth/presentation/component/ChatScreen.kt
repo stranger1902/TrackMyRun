@@ -1,6 +1,6 @@
-package com.example.trackmyrun.tmp_bluetooth.presentation.component
+package com.example.trackmyrun.bluetooth.presentation.component
 
-import com.example.trackmyrun.tmp_bluetooth.presentation.BluetoothUiState
+import com.example.trackmyrun.bluetooth.presentation.BluetoothUiState
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -12,6 +12,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.items
@@ -25,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun ChatScreen(
@@ -52,7 +54,9 @@ fun ChatScreen(
         ) {
 
             Text(
-                text = "Messages",
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp,
+                text = "Messaggi",
                 modifier = Modifier
                     .weight(1f)
             )
@@ -102,7 +106,7 @@ fun ChatScreen(
             OutlinedTextField(
                 value = message,
                 placeholder = {
-                    Text(text = "Message")
+                    Text(text = "Messaggio")
                 },
                 onValueChange = {
                     message = it

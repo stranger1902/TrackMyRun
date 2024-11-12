@@ -1,4 +1,4 @@
-package com.example.trackmyrun.tmp_bluetooth.data.chat
+package com.example.trackmyrun.bluetooth.data.chat
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -7,8 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 
-class BluetoothStateReceiver(
-    private val onStateChanged: (isConnected: Boolean, device: BluetoothDevice) -> Unit
+class FoundDeviceReceiver(
+    private val onDeviceFound: (device: BluetoothDevice) -> Unit,
+    private val onDiscovery: (isDiscovering: Boolean) -> Unit
 ): BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -20,12 +21,18 @@ class BluetoothStateReceiver(
 
         when(intent?.action) {
 
-            BluetoothDevice.ACTION_ACL_DISCONNECTED -> onStateChanged(false, device ?: return)
+            BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
+                onDiscovery(false)
+            }
 
-            BluetoothDevice.ACTION_ACL_CONNECTED -> onStateChanged(true, device ?: return)
+            BluetoothAdapter.ACTION_DISCOVERY_STARTED -> {
+                onDiscovery(true)
+            }
 
-            BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED -> {
-
+            BluetoothDevice.ACTION_FOUND -> {
+                device?.let {
+                    onDeviceFound(it)
+                }
             }
         }
     }

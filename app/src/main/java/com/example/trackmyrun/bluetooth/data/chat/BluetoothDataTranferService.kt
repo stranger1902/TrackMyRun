@@ -1,6 +1,6 @@
-package com.example.trackmyrun.tmp_bluetooth.data.chat
+package com.example.trackmyrun.bluetooth.data.chat
 
-import com.example.trackmyrun.tmp_bluetooth.domain.chat.BluetoothMessage
+import com.example.trackmyrun.bluetooth.domain.chat.BluetoothMessage
 import android.bluetooth.BluetoothSocket
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext

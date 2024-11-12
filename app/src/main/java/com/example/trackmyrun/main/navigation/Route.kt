@@ -11,6 +11,9 @@ sealed class MainDestination {
     ): MainDestination()
 
     @Serializable
+    data object BluetoothScreen: MainDestination()
+
+    @Serializable
     data object NewRunScreen: MainDestination()
 
     @Serializable

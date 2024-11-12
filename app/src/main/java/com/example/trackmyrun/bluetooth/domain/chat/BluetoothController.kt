@@ -1,4 +1,4 @@
-package com.example.trackmyrun.tmp_bluetooth.domain.chat
+package com.example.trackmyrun.bluetooth.domain.chat
 
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.Flow
@@ -22,5 +22,6 @@ interface BluetoothController {
 
     suspend fun trySendMessage(message: String): BluetoothMessage?
 
+    fun registerReceiver()
     fun release()
 }

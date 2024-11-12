@@ -1,8 +1,8 @@
-package com.example.trackmyrun.tmp_bluetooth.presentation
+package com.example.trackmyrun.bluetooth.presentation
 
-import com.example.trackmyrun.tmp_bluetooth.domain.chat.BluetoothDeviceDomain
-import com.example.trackmyrun.tmp_bluetooth.domain.chat.BluetoothController
-import com.example.trackmyrun.tmp_bluetooth.domain.chat.ConnectionResult
+import com.example.trackmyrun.bluetooth.domain.chat.BluetoothDeviceDomain
+import com.example.trackmyrun.bluetooth.domain.chat.BluetoothController
+import com.example.trackmyrun.bluetooth.domain.chat.ConnectionResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -105,6 +105,7 @@ class BluetoothViewModel @Inject constructor(
             ConnectionResult.ConnectionEstablished ->
                 _state.update {
                     it.copy(
+                        messages = emptyList(),
                         isConnecting = false,
                         isConnected = true
                     )
@@ -113,6 +114,7 @@ class BluetoothViewModel @Inject constructor(
             is ConnectionResult.Error ->
                 _state.update {
                     it.copy(
+                        messages = emptyList(),
                         isConnecting = false,
                         isConnected = false
                     )
@@ -126,16 +128,11 @@ class BluetoothViewModel @Inject constructor(
         bluetoothController.closeConnection()
         _state.update {
             it.copy(
+                messages = emptyList(),
                 isConnecting = false,
                 isConnected = false
             )
         }
     }.launchIn(viewModelScope)
-
-    override fun onCleared() {
-        super.onCleared().also {
-            bluetoothController.release()
-        }
-    }
 
 }

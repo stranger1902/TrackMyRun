@@ -21,8 +21,15 @@ class PermissionManager(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.FOREGROUND_SERVICE
     ).apply {
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             add(Manifest.permission.POST_NOTIFICATIONS)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            add(Manifest.permission.BLUETOOTH_CONNECT)
+            add(Manifest.permission.BLUETOOTH_SCAN)
+
+        }
     }.toList()
 
     fun checkPermissions() {

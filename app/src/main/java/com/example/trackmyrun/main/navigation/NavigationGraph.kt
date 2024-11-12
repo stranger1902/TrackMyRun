@@ -2,6 +2,7 @@ package com.example.trackmyrun.main.navigation
 
 import com.example.trackmyrun.run_statistics.presentation.StatisticsScreen
 import com.example.trackmyrun.run_detail.presentation.RunDetailScreen
+import com.example.trackmyrun.bluetooth.presentation.BluetoothScreen
 import com.example.trackmyrun.profile.presentation.ProfileScreen
 import com.example.trackmyrun.run_new.presentation.NewRunScreen
 import com.example.trackmyrun.main.presentation.MainScreen
@@ -55,6 +56,13 @@ fun NavGraphBuilder.registerMainGraph(navController: NavHostController) {
             )
         }
 
+        composable<MainDestination.BluetoothScreen> {
+            BluetoothScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+        }
+
         composable<MainDestination.RunDetailScreen> {
 
             val args = it.toRoute<MainDestination.RunDetailScreen>()
@@ -93,7 +101,10 @@ fun NavGraphBuilder.registerBottomNavigationGraph(mainGraphNavController: NavHos
         composable<BottomNavigationDestination.ProfileScreen> {
             ProfileScreen(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxSize(),
+                onFloatingButtonClick = {
+                    mainGraphNavController.navigate(MainDestination.BluetoothScreen)
+                }
             )
         }
 
