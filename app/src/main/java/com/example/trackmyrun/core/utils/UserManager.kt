@@ -1,8 +1,5 @@
 package com.example.trackmyrun.core.utils
 
-import com.example.trackmyrun.core.utils.Constants.Companion.WEIGHT_USER_DATASTORE_KEY
-import com.example.trackmyrun.core.utils.Constants.Companion.HEIGHT_USER_DATASTORE_KEY
-import com.example.trackmyrun.core.utils.Constants.Companion.NAME_USER_DATASTORE_KEY
 import com.example.trackmyrun.core.domain.model.UserModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import androidx.datastore.preferences.core.edit
@@ -15,7 +12,9 @@ import kotlinx.coroutines.CoroutineScope
 import com.example.trackmyrun.dataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.core.net.toUri
 import android.content.Context
+import android.net.Uri
 
 class UserManager(
     @ApplicationContext private val context: Context
@@ -30,9 +29,10 @@ class UserManager(
         coroutineScope.launch {
             context.dataStore.data.collect {
                 _currentUser.value = _currentUser.value.copy(
-                    height = it[HEIGHT_USER_DATASTORE_KEY] ?: 0,
-                    weight = it[WEIGHT_USER_DATASTORE_KEY] ?: 0,
-                    name = it[NAME_USER_DATASTORE_KEY] ?: "",
+                    profilePicUri = it[Constants.PROFILE_PIC_URI_USER_DATASTORE_KEY]?.toUri(),
+                    height = it[Constants.HEIGHT_USER_DATASTORE_KEY] ?: 0,
+                    weight = it[Constants.WEIGHT_USER_DATASTORE_KEY] ?: 0,
+                    name = it[Constants.NAME_USER_DATASTORE_KEY] ?: "",
                 )
             }
         }
@@ -40,9 +40,15 @@ class UserManager(
 
     suspend fun saveUserInPreferences(user: UserModel) {
         context.dataStore.edit { preferences ->
-            preferences[NAME_USER_DATASTORE_KEY] = user.name.toLowerCase(Locale.current).capitalize(Locale.current)
-            preferences[HEIGHT_USER_DATASTORE_KEY] = user.height
-            preferences[WEIGHT_USER_DATASTORE_KEY] = user.weight
+            preferences[Constants.NAME_USER_DATASTORE_KEY] = user.name.toLowerCase(Locale.current).capitalize(Locale.current)
+            preferences[Constants.HEIGHT_USER_DATASTORE_KEY] = user.height
+            preferences[Constants.WEIGHT_USER_DATASTORE_KEY] = user.weight
+        }
+    }
+
+    suspend fun saveProfilePicUserInPreferences(uri: Uri?) {
+        context.dataStore.edit { preferences ->
+            preferences[Constants.PROFILE_PIC_URI_USER_DATASTORE_KEY] = uri.toString()
         }
     }
 

@@ -42,6 +42,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -90,6 +94,11 @@ dependencies {
     // Google Maps Compose
     implementation(libs.maps.compose)
     implementation(libs.maps.utils)
+
+    // Coil Image
+    implementation(libs.coil.compose)
+    implementation(libs.coil.ktor)
+    implementation(libs.coil)
 
     // Android Test
     androidTestImplementation(platform(libs.androidx.compose.bom))

@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.net.Uri
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
@@ -58,6 +59,12 @@ class ProfileViewModel @Inject constructor(
     fun loadNextPage() {
         viewModelScope.launch {
             paginator.loadNextPage()
+        }
+    }
+
+    fun saveProfilePic(uri: Uri?) {
+        viewModelScope.launch {
+            userManager.saveProfilePicUserInPreferences(uri)
         }
     }
 

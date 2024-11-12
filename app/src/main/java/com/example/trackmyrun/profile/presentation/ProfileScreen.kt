@@ -1,44 +1,45 @@
 package com.example.trackmyrun.profile.presentation
 
-import com.example.trackmyrun.core.presentation.PullToRefreshLazyColumn
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.foundation.basicMarquee
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.ui.res.painterResource
 import androidx.compose.material.icons.Icons
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.foundation.Image
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.trackmyrun.R
+import coil.compose.AsyncImage
+import android.content.Intent
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
@@ -52,6 +53,8 @@ fun ProfileScreen(
 
     val lazyListState = rememberLazyListState()
 
+    val context = LocalContext.current
+
     val isEndScrollReached by remember {
         derivedStateOf {
             !lazyListState.canScrollForward
@@ -63,6 +66,14 @@ fun ProfileScreen(
             state.isLoading
         }
     }
+
+    val photoPickerLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocument()) {
+            it?.let { uri ->
+                context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION )
+                viewModel.saveProfilePic(uri)
+            }
+        }
 
     LaunchedEffect(isEndScrollReached, isRefreshing) {
         if (!state.isLoading && !state.isEndReached && isEndScrollReached)
@@ -84,23 +95,33 @@ fun ProfileScreen(
                 )
             }
         }
-    ) {
+    ) { innerPadding ->
 
         Column (
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
+                .padding(innerPadding)
                 .padding(horizontal = 16.dp)
         ) {
 
-            Image(
-                imageVector = Icons.Default.AccountCircle,
+            Spacer(modifier = Modifier.height(16.dp))
+
+            AsyncImage(
+                placeholder = rememberVectorPainter(image = Icons.Default.AccountCircle),
+                error = rememberVectorPainter(image = Icons.Default.Clear),
                 contentDescription = "profile image",
-                colorFilter = ColorFilter.tint(
-                    color = MaterialTheme.colorScheme.onSurface
-                ),
+                contentScale = ContentScale.Crop,
+                model = user.profilePicUri,
+                onError = {
+                    it.result.throwable.printStackTrace()
+                },
                 modifier = Modifier
+                    .clip(CircleShape)
                     .size(160.dp)
+                    .clickable {
+                        photoPickerLauncher.launch(arrayOf("image/*"))
+                    }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -129,36 +150,37 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Start,
-                text = "lista amici",
-                fontSize = 24.sp,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
+//            Text(
+//                fontWeight = FontWeight.Bold,
+//                textAlign = TextAlign.Start,
+//                text = "lista amici",
+//                fontSize = 24.sp,
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//            )
 
-            Spacer(modifier = Modifier.height(16.dp))
+//            Spacer(modifier = Modifier.height(16.dp))
 
-            PullToRefreshLazyColumn(
-                lazyListState = lazyListState,
-                isRefreshing = isRefreshing,
-                items = state.items,
-                onRefresh = { },
-                itemContent = { item ->
+//            PullToRefreshLazyColumn(
+//                lazyListState = lazyListState,
+//                isRefreshing = isRefreshing,
+//                items = state.items,
+//                onRefresh = { },
+//                itemContent = { item ->
+//
+//                },
+//                emptyContent = {
+//                    Image(
+//                        painter = painterResource(R.drawable.empty_list),
+//                        contentDescription = "empty list",
+//                        modifier = Modifier
+//                            .fillMaxSize()
+//                    )
+//                },
+//                modifier = Modifier
+//                    .fillMaxSize()
+//            )
 
-                },
-                emptyContent = {
-                    Image(
-                        painter = painterResource(R.drawable.empty_list),
-                        contentDescription = "empty list",
-                        modifier = Modifier
-                            .fillMaxSize()
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxSize()
-            )
         }
     }
 }

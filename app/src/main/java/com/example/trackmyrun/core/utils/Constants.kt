@@ -7,6 +7,7 @@ class Constants {
 
     companion object {
 
+        val PROFILE_PIC_URI_USER_DATASTORE_KEY = stringPreferencesKey("uri")
         val HEIGHT_USER_DATASTORE_KEY = intPreferencesKey("height")
         val WEIGHT_USER_DATASTORE_KEY = intPreferencesKey("weight")
         val NAME_USER_DATASTORE_KEY = stringPreferencesKey("name")
