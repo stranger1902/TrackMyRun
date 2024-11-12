@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.layout.ContentScale
@@ -28,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.Image
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.material3.Icon
@@ -107,22 +110,40 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            AsyncImage(
-                placeholder = rememberVectorPainter(image = Icons.Default.AccountCircle),
-                error = rememberVectorPainter(image = Icons.Default.Clear),
-                contentDescription = "profile image",
-                contentScale = ContentScale.Crop,
-                model = user.profilePicUri,
-                onError = {
-                    it.result.throwable.printStackTrace()
-                },
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(160.dp)
-                    .clickable {
-                        photoPickerLauncher.launch(arrayOf("image/*"))
-                    }
+            val defaultImage = rememberVectorPainter(
+                image = Icons.Default.AccountCircle
             )
+
+            if (user.profilePicUri != null)
+                AsyncImage(
+                    error = rememberVectorPainter(image = Icons.Default.Clear),
+                    contentDescription = "profile image",
+                    contentScale = ContentScale.Crop,
+                    model = user.profilePicUri,
+                    placeholder = defaultImage,
+                    onError = {
+                        it.result.throwable.printStackTrace()
+                    },
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(160.dp)
+                        .clickable {
+                            photoPickerLauncher.launch(arrayOf("image/*"))
+                        }
+                )
+            else
+                Image(
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                    contentDescription = "profile image",
+                    contentScale = ContentScale.Crop,
+                    painter = defaultImage,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(160.dp)
+                        .clickable {
+                            photoPickerLauncher.launch(arrayOf("image/*"))
+                        }
+                )
 
             Spacer(modifier = Modifier.height(16.dp))
 
