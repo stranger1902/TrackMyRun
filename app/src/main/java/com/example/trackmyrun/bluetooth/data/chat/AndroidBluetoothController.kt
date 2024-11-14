@@ -2,6 +2,7 @@ package com.example.trackmyrun.bluetooth.data.chat
 
 import com.example.trackmyrun.bluetooth.domain.chat.BluetoothDeviceDomain
 import com.example.trackmyrun.bluetooth.domain.chat.BluetoothController
+import com.example.trackmyrun.bluetooth.domain.chat.BluetoothUserModel
 import com.example.trackmyrun.bluetooth.domain.chat.ConnectionResult
 import com.example.trackmyrun.bluetooth.domain.chat.BluetoothMessage
 import com.example.trackmyrun.core.utils.PermissionManager
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import android.bluetooth.BluetoothServerSocket
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.serialization.encodeToString
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.asStateFlow
 import android.bluetooth.BluetoothManager
@@ -20,7 +22,10 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.CoroutineScope
 import android.bluetooth.BluetoothSocket
 import android.bluetooth.BluetoothDevice
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.onStart
 import android.annotation.SuppressLint
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
@@ -46,7 +51,7 @@ class AndroidBluetoothController(
         const val SERVICE_UUID = "62eac33e-6fe4-4230-8776-5a2ac26585dc"
     }
 
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private val _scannedDevices = MutableStateFlow<List<BluetoothDeviceDomain>>(emptyList())
     private val _pairedDevices = MutableStateFlow<List<BluetoothDeviceDomain>>(emptyList())
@@ -150,6 +155,9 @@ class AndroidBluetoothController(
                 emitAll(
                     dataTransferSerice
                         ?.listenForIncomingMessages()
+                        ?.onStart {
+                            trySendMessage(Json.encodeToString(BluetoothUserModel("ciaooooooo")))
+                        }
                         ?.map { message ->
                             ConnectionResult.TransferSucceeded(
                                 message = message
@@ -203,6 +211,9 @@ class AndroidBluetoothController(
                 emitAll(
                     dataTransferSerice
                         ?.listenForIncomingMessages()
+                        ?.onStart {
+                            trySendMessage(Json.encodeToString(BluetoothUserModel("ciaooooooo")))
+                        }
                         ?.map { message ->
                             ConnectionResult.TransferSucceeded(message)
                         } ?: emptyFlow()
