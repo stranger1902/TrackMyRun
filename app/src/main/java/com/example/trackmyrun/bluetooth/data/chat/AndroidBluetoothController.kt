@@ -4,6 +4,7 @@ import com.example.trackmyrun.bluetooth.domain.chat.BluetoothDeviceDomain
 import com.example.trackmyrun.bluetooth.domain.chat.BluetoothController
 import com.example.trackmyrun.bluetooth.domain.chat.ConnectionResult
 import com.example.trackmyrun.bluetooth.domain.chat.BluetoothMessage
+import com.example.trackmyrun.core.utils.PermissionManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import android.bluetooth.BluetoothServerSocket
@@ -16,7 +17,6 @@ import android.bluetooth.BluetoothAdapter
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.CoroutineScope
-import android.content.pm.PackageManager
 import android.bluetooth.BluetoothSocket
 import android.bluetooth.BluetoothDevice
 import kotlinx.coroutines.flow.emitAll
@@ -31,12 +31,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import android.content.Context
 import java.io.IOException
-import android.Manifest
 import java.util.UUID
 
 @SuppressLint("MissingPermission", "UnspecifiedRegisterReceiverFlag")
 class AndroidBluetoothController(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val permissionManager: PermissionManager
 ): BluetoothController {
 
     companion object {
@@ -103,7 +103,7 @@ class AndroidBluetoothController(
 
     override fun startDiscovery() {
 
-        if (!hasPermission(Manifest.permission.BLUETOOTH_SCAN)) return
+        if (!permissionManager.checkBluetoothPermission()) return
 
         updatePairedDevices()
 
@@ -112,14 +112,14 @@ class AndroidBluetoothController(
 
     override fun stopDiscovery() {
 
-        if (!hasPermission(Manifest.permission.BLUETOOTH_SCAN)) return
+        if (!permissionManager.checkBluetoothPermission()) return
 
         bluetoothAdapter.cancelDiscovery()
     }
 
     override fun connectToDevice(device: BluetoothDeviceDomain): Flow<ConnectionResult> = flow {
 
-        if (!hasPermission(Manifest.permission.BLUETOOTH_CONNECT))
+        if (!permissionManager.checkBluetoothPermission())
             throw SecurityException("No bluetooth connect permission granted")
 
         currentClientSocket = bluetoothAdapter
@@ -166,7 +166,7 @@ class AndroidBluetoothController(
 
     override fun startBluetoothServer(): Flow<ConnectionResult> = flow {
 
-        if (!hasPermission(Manifest.permission.BLUETOOTH_CONNECT))
+        if (!permissionManager.checkBluetoothPermission())
             throw SecurityException("No bluetooth connect permission granted")
 
         currentServerSocket = bluetoothAdapter.listenUsingRfcommWithServiceRecord("chat_service", UUID.fromString(SERVICE_UUID))
@@ -210,7 +210,7 @@ class AndroidBluetoothController(
 
     override suspend fun trySendMessage(message: String): BluetoothMessage? {
 
-        if (!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) return null
+        if (!permissionManager.checkBluetoothPermission()) return null
 
         if (dataTransferSerice == null) return null
 
@@ -261,7 +261,7 @@ class AndroidBluetoothController(
 
     private fun updatePairedDevices() {
 
-        if (!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) return
+        if (!permissionManager.checkBluetoothPermission()) return
 
         bluetoothAdapter.bondedDevices
             .map {
@@ -270,10 +270,6 @@ class AndroidBluetoothController(
             .also { devices ->
                 _pairedDevices.update { devices }
             }
-    }
-
-    private fun hasPermission(permission: String): Boolean {
-        return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
     }
 
 }
