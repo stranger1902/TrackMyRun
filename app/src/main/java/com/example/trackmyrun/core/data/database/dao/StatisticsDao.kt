@@ -10,7 +10,7 @@ interface StatisticsDao {
 
     @Query("SELECT SUM(durationMillis) AS totalDurationMillis, " +
             "SUM(distanceMeters) AS totalDistanceMeters, " +
-            "SUM(avgSpeedMs) AS totalAvgSpeedMs, " +
+            "AVG(avgSpeedMs) AS totalAvgSpeedMs, " +
             "SUM(kcalBurned) AS totalKcalBurned, " +
             "COUNT(*) AS totalRun " +
             "FROM RUN")
