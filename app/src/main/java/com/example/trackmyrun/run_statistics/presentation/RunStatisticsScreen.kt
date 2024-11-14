@@ -4,11 +4,13 @@ import com.example.trackmyrun.run_statistics.presentation.component.LineGraph
 import com.example.trackmyrun.core.extensions.toStopwatchUserFormat
 import com.example.trackmyrun.core.domain.model.RunStatisticsModel
 import com.example.trackmyrun.core.domain.model.RunKcalBurnedModel
+import com.example.trackmyrun.core.extensions.toShortDateFormat
 import com.example.trackmyrun.core.extensions.shimmerEffect
 import com.example.trackmyrun.core.extensions.conditional
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.icons.filled.Warning
 import com.example.trackmyrun.core.extensions.msToKmH
 import androidx.compose.foundation.layout.Arrangement
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -18,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.size
@@ -25,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.painterResource
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.getValue
@@ -267,17 +271,42 @@ fun StatisticsScreen(
             )
         }
 
-        if ((runsKcalBurned?.size ?: 0) >= 2) {
-
+        if ((runsKcalBurned?.size ?: 0) >= 2)
             LineGraph(
-                labelsAxisX = runsKcalBurned!!.map { it.startTimestamp.toString().takeLast(3) },
+                labelsAxisX = runsKcalBurned!!.map { it.startTimestamp.toShortDateFormat() },
                 data = runsKcalBurned!!.map { it.kcalBurned },
                 modifier = modifier
                     .fillMaxWidth()
                     .height(300.dp)
             )
+        else
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
 
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+                Icon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = "warning",
+                    modifier = Modifier
+                        .size(32.dp)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = "Inserisci almeno 2 corse per mostrare il grafico sull'andamento del consumo delle calorie",
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
+            }
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
