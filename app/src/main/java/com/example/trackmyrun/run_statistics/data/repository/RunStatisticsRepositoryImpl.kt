@@ -2,6 +2,7 @@ package com.example.trackmyrun.run_statistics.data.repository
 
 import com.example.trackmyrun.run_statistics.domain.repository.RunStatisticsRepository
 import com.example.trackmyrun.core.data.database.dao.StatisticsDao
+import com.example.trackmyrun.core.domain.model.RunKcalBurnedModel
 import com.example.trackmyrun.core.domain.model.RunStatisticsModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,6 +19,15 @@ class RunStatisticsRepositoryImpl
         } catch (e: Exception) {
             e.printStackTrace()
             null
+        }
+    }
+
+    override suspend fun getRunsKcalburned(): List<RunKcalBurnedModel> = withContext(Dispatchers.IO) {
+        try {
+            statisticsDao.getRunsKcalburned()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
         }
     }
 
