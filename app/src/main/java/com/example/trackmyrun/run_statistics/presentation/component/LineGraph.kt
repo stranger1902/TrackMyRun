@@ -38,6 +38,7 @@ data class LineGraphConfig(
     val minVerticalPaddingLabelsY: Dp,
     val contentPadding: Dp,
     val borderColor: Color,
+    val pointColor: Color,
     val pathColor: Color,
     val lineColor: Color
 )
@@ -52,6 +53,7 @@ fun LineGraph(
         borderColor = MaterialTheme.colorScheme.inverseOnSurface,
         pathColor = MaterialTheme.colorScheme.onSurfaceVariant,
         lineColor = MaterialTheme.colorScheme.onSurface,
+        pointColor = MaterialTheme.colorScheme.primary,
         minHorizontalPaddingLabelsX = 16.dp,
         minVerticalPaddingLabelsY = 24.dp,
         contentPadding = 8.dp,
@@ -298,7 +300,7 @@ fun LineGraph(
                 )
 
                 drawCircle(
-                    color = Color.Red,
+                    color = lineGraphConfig.pointColor,
                     radius = 8f,
                     center = Offset(
                         y = spacePx + (heightLabelsAxisY / 2f) + (ratio * (viewPortHeightLabelsAxisY - spacePx * 2f - heightLabelsAxisY)),
@@ -338,12 +340,12 @@ fun LineGraph(
                     }
 
                     lineTo(
-                        y = viewPortHeightLabelsAxisY,
+                        y = viewPortHeightLabelsAxisY - spacePx,
                         x = drawPoints.last().x
                     )
 
                     lineTo(
-                        y = viewPortHeightLabelsAxisY,
+                        y = viewPortHeightLabelsAxisY - spacePx,
                         x = drawPoints.first().x
                     )
 

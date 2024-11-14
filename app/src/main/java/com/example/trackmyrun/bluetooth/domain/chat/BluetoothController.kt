@@ -24,6 +24,6 @@ interface BluetoothController {
 
     suspend fun trySendMessage(message: String): BluetoothMessage?
 
-    fun registerReceiver()
+    fun registerBluetoothReceivers()
     fun release()
 }

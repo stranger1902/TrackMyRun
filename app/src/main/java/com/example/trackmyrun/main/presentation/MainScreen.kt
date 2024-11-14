@@ -82,7 +82,7 @@ fun MainScreen(
         bottomBar = {
             BottomAppBar(
                 modifier = Modifier
-                    .height(80.dp)
+                    .height(64.dp)
             ) {
                 viewModel.bottomNavigationItems.forEachIndexed { index, item ->
                     NavigationBarItem(

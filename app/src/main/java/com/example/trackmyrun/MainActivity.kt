@@ -56,7 +56,7 @@ class MainActivity: ComponentActivity() {
 
         enableEdgeToEdge()
 
-        bluetoothController.registerReceiver()
+        bluetoothController.registerBluetoothReceivers()
 
 //        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
 //
@@ -76,12 +76,13 @@ class MainActivity: ComponentActivity() {
                 /* We don't need to elaborate the result... */
             }
 
-            ObserveAsEvents(bluetoothController.makeDiscoverable) { _ ->
-                Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
-                    putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, Constants.BLUETOOTH_DISCOVERABLE_INTERVAL_SEC)
-                }.also {
-                    launcher.launch(it)
-                }
+            ObserveAsEvents(bluetoothController.makeDiscoverable) { makeDiscoverable ->
+                if (makeDiscoverable)
+                    Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
+                        putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, Constants.BLUETOOTH_DISCOVERABLE_INTERVAL_SEC)
+                    }.also {
+                        launcher.launch(it)
+                    }
             }
 
             LaunchedEffect(Unit) {
@@ -107,10 +108,8 @@ class MainActivity: ComponentActivity() {
                         confirmButton = {
                             Button(
                                 onClick = {
-                                    Intent(
-                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                        Uri.fromParts("package", packageName, null)
-                                    ).also { startActivity(it) }
+                                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null))
+                                        .also { startActivity(it) }
                                 }
                             ) { Text(text = "Apri impostazioni") }
                         },

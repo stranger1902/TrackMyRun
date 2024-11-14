@@ -248,7 +248,7 @@ class AndroidBluetoothController(
         currentServerSocket = null
     }
 
-    override fun registerReceiver() {
+    override fun registerBluetoothReceivers() {
 
         context.registerReceiver(
             bluetoothStateReceiver,

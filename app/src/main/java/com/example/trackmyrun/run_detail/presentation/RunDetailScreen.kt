@@ -94,6 +94,7 @@ fun RunDetailScreen(
     ) { innerPadding ->
 
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
@@ -101,8 +102,10 @@ fun RunDetailScreen(
                 .verticalScroll(scrollState)
         ) {
 
+            Spacer(modifier = Modifier.height(8.dp))
+
             Text(
-                text = runDetail?.startTimestamp?.toDateTimeFormat() ?: "",
+                text = runDetail?.let { "inizio corsa: ${it.startTimestamp.toDateTimeFormat()}" } ?: "",
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
                 modifier = Modifier
@@ -117,7 +120,7 @@ fun RunDetailScreen(
                     contentScale = ContentScale.FillBounds,
                     bitmap = imageBitmap!!,
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(0.70f)
                         .aspectRatio(imageBitmap!!.width / imageBitmap!!.height.toFloat())
                         .padding(16.dp)
                         .clip(RoundedCornerShape(8.dp))
@@ -125,7 +128,6 @@ fun RunDetailScreen(
             else
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
                         .aspectRatio(2 / 3f)
                         .padding(16.dp)
                         .clip(RoundedCornerShape(8.dp))
