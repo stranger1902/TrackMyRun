@@ -5,17 +5,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.graphics.drawscope.inset
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.height
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.geometry.Size
@@ -23,58 +24,73 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.text.drawText
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
+
+data class LineGraphConfig(
+    val minHorizontalPaddingLabelsX: Dp,
+    val labelsAxisXTextStyle: TextStyle,
+    val labelsAxisYTextStyle: TextStyle,
+    val minVerticalPaddingLabelsY: Dp,
+    val contentPadding: Dp,
+    val borderColor: Color,
+    val pathColor: Color,
+    val lineColor: Color
+)
 
 @Composable
 fun LineGraph(
     modifier: Modifier = Modifier,
     labelsAxisX: List<String>,
     isDebug: Boolean = false,
-    data: List<Float>
+    data: List<Float>,
+    lineGraphConfig: LineGraphConfig = LineGraphConfig(
+        borderColor = MaterialTheme.colorScheme.inverseOnSurface,
+        pathColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        lineColor = MaterialTheme.colorScheme.onSurface,
+        minHorizontalPaddingLabelsX = 16.dp,
+        minVerticalPaddingLabelsY = 24.dp,
+        contentPadding = 8.dp,
+        labelsAxisXTextStyle = TextStyle(
+            background = if (isDebug) MaterialTheme.colorScheme.onSurfaceVariant else Color.Unspecified,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            fontSize = 12.sp
+        ),
+        labelsAxisYTextStyle = TextStyle(
+            background = if (isDebug) MaterialTheme.colorScheme.onSurfaceVariant else Color.Unspecified,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            fontSize = 12.sp
+        )
+    )
 ) {
-
-    if (labelsAxisX.size != data.size)
-        throw RuntimeException("axisX must contain the same number of data items list")
 
     if (data.isEmpty())
         Box(
             modifier = modifier
         ).also { return }
 
-    val MAX_VISIBLE_DATA_SIZE = 10
+    if (labelsAxisX.size != data.size) throw RuntimeException("axisX must contain the same number of data items list")
 
-    val MIN_HORIZONTAL_PADDING_LABELS_X = 16.dp
-    val MIN_VERTICAL_PADDING_LABELS_Y = 24.dp
-    val CONTENT_PADDING = 16.dp
-
-    val PATH_COLOR = MaterialTheme.colorScheme.onSurfaceVariant
-    val LINE_COLOR = MaterialTheme.colorScheme.onSurface
+    if (data.size < 2) throw RuntimeException("Graph must contains at least 2 items")
 
     val textMeauser = rememberTextMeasurer()
 
-    val labelsAxisXTextStyle = TextStyle(
-        background = if (isDebug) Color.Gray else Color.Unspecified,
-        color = MaterialTheme.colorScheme.onSurface,
-        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center,
-        fontSize = 12.sp
-    )
-
-    val labelsAxisYTextStyle = TextStyle(
-        background = if (isDebug) Color.Gray else Color.Unspecified,
-        color = MaterialTheme.colorScheme.onSurface,
-        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center,
-        fontSize = 12.sp
-    )
-
     val visibleData by remember {
         mutableStateOf(
-            data.take(MAX_VISIBLE_DATA_SIZE)
+            data.take(10)
         )
+    }
+
+    var minValueLabelAxisY by remember {
+        mutableFloatStateOf(0f)
     }
 
     val maxValue = remember {
@@ -89,31 +105,30 @@ fun LineGraph(
         modifier = modifier
     ) {
 
-        inset(
-            inset = CONTENT_PADDING.toPx()
-        ) {
+        drawRect(
+            color = lineGraphConfig.borderColor,
+            topLeft = Offset(0f, 0f),
+            style = Stroke(8f),
+            size = Size(
+                height = size.height,
+                width = size.width
+            )
+        )
 
-            if (isDebug)
-                drawRect(
-                    topLeft = Offset(0f, 0f),
-                    style = Stroke(8f),
-                    color = Color.Green,
-                    size = Size(
-                        height = size.height,
-                        width = size.width
-                    )
-                )
+        inset(
+            inset = lineGraphConfig.contentPadding.toPx()
+        ) {
 
             val textMeasureResultLabelsAxisX = labelsAxisX.map {
                 textMeauser.measure(
-                    style = labelsAxisXTextStyle,
+                    style = lineGraphConfig.labelsAxisXTextStyle,
                     text = it
                 )
             }
 
             val maxValueTextMeasureResultLabelsAxisY = textMeauser.measure(
-                style = labelsAxisYTextStyle,
-                text = maxValue.toString()
+                text = "%.2f".format(maxValue),
+                style = lineGraphConfig.labelsAxisYTextStyle,
             )
 
             val maxHeightLabelAxisX = textMeasureResultLabelsAxisX.maxOf { it.size.height }
@@ -138,19 +153,21 @@ fun LineGraph(
                     )
                 )
 
-            var spacePx = MIN_VERTICAL_PADDING_LABELS_Y.toPx() / 2f
+            var spacePx = lineGraphConfig.minVerticalPaddingLabelsY.toPx() / 2f
 
             var containerHeightLabelY = heightLabelsAxisY + (spacePx * 2f)
 
             val counterLabelsY = ((viewPortHeightLabelsAxisY - spacePx) / containerHeightLabelY).roundToInt()
 
+            val step = ((maxValue - minValue) / (counterLabelsY - 1)).roundToInt()
+
             val spaceFilledByLabelsY = containerHeightLabelY * counterLabelsY.toFloat()
             val spaceRemained = viewPortHeightLabelsAxisY - spaceFilledByLabelsY
 
-            val step = ((maxValue - minValue) / (counterLabelsY - 1)).roundToInt()
+            minValueLabelAxisY = maxValue - (step * (counterLabelsY - 1))
 
             if (isDebug)
-                println("viewPortHeightLabelsAxisY: $viewPortHeightLabelsAxisY - spaceFilledByLabelsY: $spaceFilledByLabelsY - spaceRemained: ($spaceRemained) - containerHeightLabelY: $containerHeightLabelY - counter: $counterLabelsY - maxValue: ${visibleData.max()} - minValue: ${visibleData.min()} - step: $step")
+                println("DEBUG -> viewPortHeightLabelsAxisY: $viewPortHeightLabelsAxisY - spaceFilledByLabelsY: $spaceFilledByLabelsY - spaceRemained: ($spaceRemained) - containerHeightLabelY: $containerHeightLabelY - counter: $counterLabelsY - maxValue: ${visibleData.max()} - minValue: ${visibleData.min()} - step: $step - minValueLabelAxisY: $minValueLabelAxisY")
 
             spacePx += spaceRemained / (counterLabelsY * 2f)
             containerHeightLabelY = heightLabelsAxisY + (spacePx * 2f)
@@ -158,13 +175,13 @@ fun LineGraph(
             (0..< counterLabelsY).forEach { index ->
 
                 val measureResult = textMeauser.measure(
-                    text = (maxValue - (step * index)).toString(),
-                    style = labelsAxisYTextStyle
+                    text = "%.2f".format(maxValue - (step * index)),
+                    style = lineGraphConfig.labelsAxisYTextStyle
                 )
 
                 if (isDebug)
                     drawLine(
-                        color = LINE_COLOR,
+                        color = lineGraphConfig.lineColor,
                         start = Offset(
                             y = spacePx + (index * containerHeightLabelY) + (measureResult.size.height / 2f),
                             x = widthLabelsAxisY
@@ -203,7 +220,7 @@ fun LineGraph(
                     )
                 )
 
-            var spacePx2 = MIN_HORIZONTAL_PADDING_LABELS_X.toPx() / 2f
+            var spacePx2 = lineGraphConfig.minHorizontalPaddingLabelsX.toPx() / 2f
 
             var containerWidthLabelX = widthLabelsAxisX + (spacePx2 * 2f)
 
@@ -213,7 +230,7 @@ fun LineGraph(
             val spaceRemained2 = viewPortWidthLabelsAxisX - spaceFilledByLabelsX
 
             if (isDebug)
-                println("viewPortWidthLabelsAxisX: $viewPortWidthLabelsAxisX - spaceFilledByLabelsX: $spaceFilledByLabelsX - spaceRemained2: $spaceRemained2 - containerWidthLabelX: $containerWidthLabelX - counter: $counterLabelsX")
+                println("DEBUG -> viewPortWidthLabelsAxisX: $viewPortWidthLabelsAxisX - spaceFilledByLabelsX: $spaceFilledByLabelsX - spaceRemained2: $spaceRemained2 - containerWidthLabelX: $containerWidthLabelX - counter: $counterLabelsX")
 
             spacePx2 += spaceRemained2 / (counterLabelsX * 2f)
             containerWidthLabelX = widthLabelsAxisX + (spacePx2 * 2f)
@@ -244,7 +261,7 @@ fun LineGraph(
 
                 if (isDebug)
                     drawLine(
-                        color = LINE_COLOR,
+                        color = lineGraphConfig.lineColor,
                         start = Offset(
                             y = 0f,
                             x = x
@@ -268,10 +285,10 @@ fun LineGraph(
 
             (0..< counterLabelsX).forEach { index ->
 
-                // [minYValue ; maxYValue] -> [0 ; 1]
-                val ratio = 1 - ((visibleData[index] - minValue) / (maxValue - minValue))
+                // [minValueLabelAxisY : maxYValue] -> [0 : 1]
+                val ratio = 1 - ((visibleData[index] - minValueLabelAxisY) / (maxValue - minValueLabelAxisY))
 
-                if (isDebug) println("value: ${visibleData[index]} - ratio: $ratio")
+                if (isDebug) println("DEBUG -> value: ${visibleData[index]} - ratio: $ratio")
 
                 drawPoints.add(
                     Offset(
@@ -319,23 +336,30 @@ fun LineGraph(
                             y3 = drawPoints[index].y
                         )
                     }
+
+                    lineTo(
+                        y = viewPortHeightLabelsAxisY,
+                        x = drawPoints.last().x
+                    )
+
+                    lineTo(
+                        y = viewPortHeightLabelsAxisY,
+                        x = drawPoints.first().x
+                    )
+
+                    close()
                 }
             }.also {
                 drawPath(
-                    color = PATH_COLOR,
-                    path = it,
-                    style = Stroke(
-                        cap = StrokeCap.Round,
-                        width = 5f
-                    )
+                    brush = Brush.verticalGradient(
+                        listOf(
+                            lineGraphConfig.pathColor.copy(alpha = 0.5f),
+                            Color.Transparent
+                        )
+                    ),
+                    path = it
                 )
             }
-
-
-
-
-
-
         }
     }
 }
@@ -356,6 +380,7 @@ fun LineGraphExample(
 
     val data = remember {
         listOf(34f, 24f, 77f, 125f, 48f, 4f, 22f, 84f, 26f, 62f)
+        // listOf(0.16714206f, 15.898576f, 6.098382f)
     }
 
     LineGraph(
