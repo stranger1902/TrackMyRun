@@ -11,6 +11,7 @@ interface BluetoothController {
     val isDiscovering: StateFlow<Boolean>
     val isConnected: StateFlow<Boolean>
 
+    val makeDiscoverable: Flow<Boolean>
     val errors: Flow<String>
 
     fun startDiscovery()
@@ -18,6 +19,7 @@ interface BluetoothController {
 
     fun connectToDevice(device: BluetoothDeviceDomain): Flow<ConnectionResult>
     fun startBluetoothServer(): Flow<ConnectionResult>
+    fun makeDiscoverable()
     fun closeConnection()
 
     suspend fun trySendMessage(message: String): BluetoothMessage?

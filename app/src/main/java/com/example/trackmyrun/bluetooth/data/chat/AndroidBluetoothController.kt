@@ -6,6 +6,7 @@ import com.example.trackmyrun.bluetooth.domain.chat.ConnectionResult
 import com.example.trackmyrun.bluetooth.domain.chat.BluetoothMessage
 import com.example.trackmyrun.core.utils.PermissionManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import com.example.trackmyrun.core.utils.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
 import android.bluetooth.BluetoothServerSocket
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -28,7 +29,9 @@ import android.content.IntentFilter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import android.content.Context
 import java.io.IOException
 import java.util.UUID
@@ -51,6 +54,7 @@ class AndroidBluetoothController(
     private val _isDiscovering = MutableStateFlow(false)
     private val _isConnected = MutableStateFlow(false)
 
+    private val _makeDiscoverable = Channel<Boolean>()
     private val _errors = Channel<String>()
 
     override val scannedDevices: StateFlow<List<BluetoothDeviceDomain>>
@@ -64,6 +68,9 @@ class AndroidBluetoothController(
 
     override val isConnected: StateFlow<Boolean>
         get() = _isConnected.asStateFlow()
+
+    override val makeDiscoverable: Flow<Boolean>
+        get() = _makeDiscoverable.receiveAsFlow()
 
     override val errors: Flow<String>
         get() = _errors.receiveAsFlow()
@@ -85,8 +92,8 @@ class AndroidBluetoothController(
     private val foundDeviceReceiver = FoundDeviceReceiver(
         onDeviceFound = { device ->
             _scannedDevices.update { devices ->
-                val newDevice = device.toBluetoothDeviceDomain()
-                if (newDevice in devices) devices else devices + newDevice
+                if (bluetoothAdapter.bondedDevices.contains(device))
+                    devices else devices + device.toBluetoothDeviceDomain()
             }
         },
         onDiscovery = { isDiscovering ->
@@ -207,6 +214,15 @@ class AndroidBluetoothController(
         closeConnection()
     }
     .flowOn(Dispatchers.IO)
+
+    override fun makeDiscoverable() {
+        coroutineScope.launch {
+            while (isActive) {
+                _makeDiscoverable.send(true)
+                delay((Constants.BLUETOOTH_DISCOVERABLE_INTERVAL_SEC) * 1000)
+            }
+        }
+    }
 
     override suspend fun trySendMessage(message: String): BluetoothMessage? {
 

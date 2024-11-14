@@ -55,6 +55,8 @@ class BluetoothViewModel @Inject constructor(
         bluetoothController.isConnected.onEach { isConnected ->
             _state.update { it.copy(isConnected = isConnected) }
         }.launchIn(viewModelScope)
+
+        bluetoothController.makeDiscoverable()
     }
 
     fun connectToDevice(device: BluetoothDeviceDomain) {

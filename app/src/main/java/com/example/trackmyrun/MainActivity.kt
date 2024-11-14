@@ -1,8 +1,11 @@
 package com.example.trackmyrun
 
+import com.example.trackmyrun.bluetooth.presentation.component.ObserveAsEvents
 import com.example.trackmyrun.on_boarding.navigation.registerOnBoardingGraph
 import com.example.trackmyrun.bluetooth.domain.chat.BluetoothController
 import com.example.trackmyrun.on_boarding.navigation.OnBoardingGraph
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import com.example.trackmyrun.main.navigation.registerMainGraph
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.trackmyrun.core.utils.PermissionManager
@@ -23,6 +26,7 @@ import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import android.bluetooth.BluetoothAdapter
 import androidx.compose.material3.Button
 import androidx.compose.runtime.getValue
 import androidx.datastore.core.DataStore
@@ -67,6 +71,18 @@ class MainActivity: ComponentActivity() {
             val permissionGranted by permissionManager.permissionGranted.collectAsStateWithLifecycle()
 
             val coroutineScope = rememberCoroutineScope()
+
+            val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                /* We don't need to elaborate the result... */
+            }
+
+            ObserveAsEvents(bluetoothController.makeDiscoverable) { _ ->
+                Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
+                    putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, Constants.BLUETOOTH_DISCOVERABLE_INTERVAL_SEC)
+                }.also {
+                    launcher.launch(it)
+                }
+            }
 
             LaunchedEffect(Unit) {
                 coroutineScope.launch {
