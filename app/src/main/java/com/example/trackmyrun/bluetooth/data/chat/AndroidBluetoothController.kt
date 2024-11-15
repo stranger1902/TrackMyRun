@@ -2,9 +2,9 @@ package com.example.trackmyrun.bluetooth.data.chat
 
 import com.example.trackmyrun.bluetooth.domain.chat.BluetoothDeviceDomain
 import com.example.trackmyrun.bluetooth.domain.chat.BluetoothController
-import com.example.trackmyrun.bluetooth.domain.chat.BluetoothUserModel
 import com.example.trackmyrun.bluetooth.domain.chat.ConnectionResult
 import com.example.trackmyrun.bluetooth.domain.chat.BluetoothMessage
+import com.example.trackmyrun.core.domain.model.FriendModel
 import com.example.trackmyrun.core.utils.PermissionManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.example.trackmyrun.core.utils.Constants
@@ -56,6 +56,7 @@ class AndroidBluetoothController(
     private val _scannedDevices = MutableStateFlow<List<BluetoothDeviceDomain>>(emptyList())
     private val _pairedDevices = MutableStateFlow<List<BluetoothDeviceDomain>>(emptyList())
 
+    private val _isBluetoothEnabled = MutableStateFlow(false)
     private val _isDiscovering = MutableStateFlow(false)
     private val _isConnected = MutableStateFlow(false)
 
@@ -67,6 +68,9 @@ class AndroidBluetoothController(
 
     override val pairedDevices: StateFlow<List<BluetoothDeviceDomain>>
         get() = _pairedDevices.asStateFlow()
+
+    override val isBluetoothEnabled: StateFlow<Boolean>
+        get() = _isBluetoothEnabled.asStateFlow()
 
     override val isDiscovering: StateFlow<Boolean>
         get() = _isDiscovering.asStateFlow()
@@ -110,6 +114,7 @@ class AndroidBluetoothController(
     private var currentClientSocket: BluetoothSocket? = null
 
     init {
+        _isBluetoothEnabled.value = bluetoothAdapter.isEnabled
         updatePairedDevices()
     }
 
@@ -117,22 +122,32 @@ class AndroidBluetoothController(
 
         if (!permissionManager.checkBluetoothPermission()) return
 
-        updatePairedDevices()
+        _isBluetoothEnabled.value = bluetoothAdapter.isEnabled
 
-        bluetoothAdapter.startDiscovery()
+        if (bluetoothAdapter.isEnabled) {
+            updatePairedDevices()
+            bluetoothAdapter.startDiscovery()
+        }
     }
 
     override fun stopDiscovery() {
 
         if (!permissionManager.checkBluetoothPermission()) return
 
-        bluetoothAdapter.cancelDiscovery()
+        _isBluetoothEnabled.value = bluetoothAdapter.isEnabled
+
+        if (bluetoothAdapter.isEnabled)
+            bluetoothAdapter.cancelDiscovery()
     }
 
     override fun connectToDevice(device: BluetoothDeviceDomain): Flow<ConnectionResult> = flow {
 
         if (!permissionManager.checkBluetoothPermission())
             throw SecurityException("No bluetooth connect permission granted")
+
+        _isBluetoothEnabled.value = bluetoothAdapter.isEnabled
+
+        if (bluetoothAdapter.isEnabled) return@flow
 
         currentClientSocket = bluetoothAdapter
             .getRemoteDevice(device.address)
@@ -156,7 +171,15 @@ class AndroidBluetoothController(
                     dataTransferSerice
                         ?.listenForIncomingMessages()
                         ?.onStart {
-                            trySendMessage(Json.encodeToString(BluetoothUserModel("ciaooooooo")))
+                            trySendMessage(
+                                Json.encodeToString(
+                                    FriendModel(
+                                        startTimestamp = System.currentTimeMillis(),
+                                        name = "ciaooooo <NAME>",
+                                        id = "<ID>"
+                                    )
+                                )
+                            )
                         }
                         ?.map { message ->
                             ConnectionResult.TransferSucceeded(
@@ -183,6 +206,10 @@ class AndroidBluetoothController(
 
         if (!permissionManager.checkBluetoothPermission())
             throw SecurityException("No bluetooth connect permission granted")
+
+        _isBluetoothEnabled.value = bluetoothAdapter.isEnabled
+
+        if (bluetoothAdapter.isEnabled) return@flow
 
         currentServerSocket = bluetoothAdapter.listenUsingRfcommWithServiceRecord("chat_service", UUID.fromString(SERVICE_UUID))
 
@@ -212,7 +239,15 @@ class AndroidBluetoothController(
                     dataTransferSerice
                         ?.listenForIncomingMessages()
                         ?.onStart {
-                            trySendMessage(Json.encodeToString(BluetoothUserModel("ciaooooooo")))
+                            trySendMessage(
+                                Json.encodeToString(
+                                    FriendModel(
+                                        startTimestamp = System.currentTimeMillis(),
+                                        name = "ciaooooo <NAME>",
+                                        id = "<ID>"
+                                    )
+                                )
+                            )
                         }
                         ?.map { message ->
                             ConnectionResult.TransferSucceeded(message)
@@ -240,6 +275,10 @@ class AndroidBluetoothController(
         if (!permissionManager.checkBluetoothPermission()) return null
 
         if (dataTransferSerice == null) return null
+
+        _isBluetoothEnabled.value = bluetoothAdapter.isEnabled
+
+        if (bluetoothAdapter.isEnabled) return null
 
         val bluetoothMessage = BluetoothMessage(
             senderName = bluetoothAdapter.name ?: "Unknown name",
