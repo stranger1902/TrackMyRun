@@ -1,5 +1,6 @@
 package com.example.trackmyrun.profile.presentation
 
+import com.example.trackmyrun.profile.presentation.component.FriendItem
 import com.example.trackmyrun.core.presentation.PullToRefreshLazyColumn
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,6 +12,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.foundation.shape.CircleShape
@@ -24,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.size
@@ -31,10 +34,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -152,10 +157,10 @@ fun ProfileScreen(
                         }
                 )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Benvenuto ${user.name}",
+                text = "Benvenuto ${user.name}!",
                 fontWeight = FontWeight.Bold,
                 fontSize = 32.sp,
                 modifier = Modifier
@@ -164,17 +169,53 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "altezza: ${user.height} cm",
-                fontSize = 20.sp
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Icon(
+                    painter = painterResource(R.drawable.ic_height),
+                    contentDescription = "height",
+                    tint = Color.Unspecified,
+                    modifier = Modifier
+                        .size(24.dp)
+                )
 
-            Text(
-                text = "peso: ${user.weight} Kg",
-                fontSize = 20.sp
-            )
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = "altezza: ${user.height} cm",
+                    fontSize = 20.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+
+                Icon(
+                    painter = painterResource(R.drawable.ic_weight),
+                    contentDescription = "weight",
+                    tint = Color.Unspecified,
+                    modifier = Modifier
+                        .size(24.dp)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = "peso: ${user.weight} Kg",
+                    fontSize = 20.sp
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -182,7 +223,7 @@ fun ProfileScreen(
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start,
                 text = "I tuoi amici",
-                fontSize = 20.sp,
+                fontSize = 24.sp,
                 modifier = Modifier
                     .fillMaxWidth()
             )
@@ -195,7 +236,11 @@ fun ProfileScreen(
                 items = state.items,
                 onRefresh = { },
                 itemContent = { item ->
-                    Text(text = "${item.name} ${item.id}")
+                    FriendItem(
+                        item = item,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
                 },
                 emptyContent = {
                     Image(
