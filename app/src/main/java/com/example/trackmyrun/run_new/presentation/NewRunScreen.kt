@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.example.trackmyrun.core.utils.Constants
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.offset
 import com.google.maps.android.compose.GoogleMap
@@ -31,9 +32,9 @@ import com.google.maps.android.compose.MapType
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.AlertDialog
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.window.Dialog
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -189,20 +190,24 @@ fun NewRunScreen(
         }
 
         if (countdownIsRunning)
-            AlertDialog(
-                onDismissRequest = { },
-                confirmButton = { },
-                text = {
-                    CountdownIndicator(
-                        maxIndicatorValue = Constants.RUN_COUNTDOWN_INITIAL_VALUE,
-                        countdown = countdown,
-                        onSkipTimerClick = {
-                            viewModel.skipCountdown()
-                        },
-                        size = 250.dp
-                    )
+            Dialog(
+                properties = DialogProperties(
+                    dismissOnClickOutside = false,
+                    dismissOnBackPress = true
+                ),
+                onDismissRequest = {
+                    viewModel.skipCountdown()
                 }
-            )
+            ) {
+                CountdownIndicator(
+                    maxIndicatorValue = Constants.RUN_COUNTDOWN_INITIAL_VALUE,
+                    countdown = countdown,
+                    size = 240.dp,
+                    onSkipTimerClick = {
+                        viewModel.skipCountdown()
+                    }
+                )
+            }
 
         if (!takeSnapshot)
             NewRunController(
