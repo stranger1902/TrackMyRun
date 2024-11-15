@@ -2,6 +2,7 @@ package com.example.trackmyrun.main.navigation
 
 import com.example.trackmyrun.run_statistics.presentation.StatisticsScreen
 import com.example.trackmyrun.run_detail.presentation.RunDetailScreen
+import com.example.trackmyrun.run_friend.presentation.RunFriendScreen
 import com.example.trackmyrun.bluetooth.presentation.BluetoothScreen
 import com.example.trackmyrun.profile.presentation.ProfileScreen
 import com.example.trackmyrun.run_new.presentation.NewRunScreen
@@ -56,6 +57,19 @@ fun NavGraphBuilder.registerMainGraph(navController: NavHostController) {
             )
         }
 
+        composable<MainDestination.RunFriendScreen> {
+            RunFriendScreen(
+                onFriendshipRequestAccepted = {
+                    navController.also {
+                        it.popBackStack()
+                        it.navigate(MainGraph)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+        }
+
         composable<MainDestination.BluetoothScreen> {
             BluetoothScreen(
                 modifier = Modifier
@@ -103,7 +117,7 @@ fun NavGraphBuilder.registerBottomNavigationGraph(mainGraphNavController: NavHos
                 modifier = Modifier
                     .fillMaxSize(),
                 onFloatingButtonClick = {
-                    mainGraphNavController.navigate(MainDestination.BluetoothScreen)
+                    mainGraphNavController.navigate(MainDestination.RunFriendScreen)
                 }
             )
         }

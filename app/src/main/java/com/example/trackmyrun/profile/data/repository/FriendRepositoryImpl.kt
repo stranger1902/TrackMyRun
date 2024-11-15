@@ -5,6 +5,7 @@ import com.example.trackmyrun.core.data.local.model.ResponsePagingModel
 import com.example.trackmyrun.core.data.local.model.ResponseErrorModel
 import com.example.trackmyrun.core.data.database.dao.FriendDao
 import com.example.trackmyrun.core.domain.model.FriendModel
+import com.example.trackmyrun.core.domain.model.toEntity
 import com.example.trackmyrun.core.domain.model.toModel
 import javax.inject.Inject
 
@@ -27,6 +28,16 @@ class FriendRepositoryImpl @Inject constructor(
                     errorCode = null
                 )
             )
+        }
+    }
+
+    override suspend fun insertFriend(friend: FriendModel): Boolean {
+        try {
+            friendDao.insertFriend(friend.toEntity())
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
         }
     }
 

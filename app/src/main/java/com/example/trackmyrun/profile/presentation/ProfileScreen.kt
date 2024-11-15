@@ -1,12 +1,15 @@
 package com.example.trackmyrun.profile.presentation
 
+import com.example.trackmyrun.core.presentation.PullToRefreshLazyColumn
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -18,6 +21,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.foundation.basicMarquee
@@ -26,6 +30,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.ui.res.painterResource
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.Scaffold
@@ -40,9 +45,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.trackmyrun.R
 import coil.compose.AsyncImage
 import android.content.Intent
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
@@ -145,7 +152,7 @@ fun ProfileScreen(
                         }
                 )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "Benvenuto ${user.name}",
@@ -159,48 +166,49 @@ fun ProfileScreen(
 
             Text(
                 text = "altezza: ${user.height} cm",
-                fontSize = 24.sp
+                fontSize = 20.sp
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "peso: ${user.weight} Kg",
-                fontSize = 24.sp
+                fontSize = 20.sp
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Start,
+                text = "I tuoi amici",
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-//            Text(
-//                fontWeight = FontWeight.Bold,
-//                textAlign = TextAlign.Start,
-//                text = "lista amici",
-//                fontSize = 24.sp,
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//            )
-
-//            Spacer(modifier = Modifier.height(16.dp))
-
-//            PullToRefreshLazyColumn(
-//                lazyListState = lazyListState,
-//                isRefreshing = isRefreshing,
-//                items = state.items,
-//                onRefresh = { },
-//                itemContent = { item ->
-//
-//                },
-//                emptyContent = {
-//                    Image(
-//                        painter = painterResource(R.drawable.empty_list),
-//                        contentDescription = "empty list",
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//                    )
-//                },
-//                modifier = Modifier
-//                    .fillMaxSize()
-//            )
+            PullToRefreshLazyColumn(
+                lazyListState = lazyListState,
+                isRefreshing = isRefreshing,
+                items = state.items,
+                onRefresh = { },
+                itemContent = { item ->
+                    Text(text = "${item.name} ${item.id}")
+                },
+                emptyContent = {
+                    Image(
+                        painter = painterResource(R.drawable.empty_list),
+                        contentDescription = "empty list",
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
 
         }
     }

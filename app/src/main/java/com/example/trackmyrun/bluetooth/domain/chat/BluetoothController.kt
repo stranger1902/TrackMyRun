@@ -8,10 +8,10 @@ interface BluetoothController {
     val scannedDevices: StateFlow<List<BluetoothDeviceDomain>>
     val pairedDevices: StateFlow<List<BluetoothDeviceDomain>>
 
-    val isBluetoothEnabled: StateFlow<Boolean>
     val isDiscovering: StateFlow<Boolean>
     val isConnected: StateFlow<Boolean>
 
+    val isBluetoothEnabled: Flow<Boolean>
     val makeDiscoverable: Flow<Boolean>
     val errors: Flow<String>
 
@@ -20,7 +20,10 @@ interface BluetoothController {
 
     fun connectToDevice(device: BluetoothDeviceDomain): Flow<ConnectionResult>
     fun startBluetoothServer(): Flow<ConnectionResult>
+
+    fun makeUndiscovered()
     fun makeDiscoverable()
+
     fun closeConnection()
 
     suspend fun trySendMessage(message: String): BluetoothMessage?

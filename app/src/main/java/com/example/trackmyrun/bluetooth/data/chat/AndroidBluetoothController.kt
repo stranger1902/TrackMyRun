@@ -7,6 +7,7 @@ import com.example.trackmyrun.bluetooth.domain.chat.BluetoothMessage
 import com.example.trackmyrun.core.domain.model.FriendModel
 import com.example.trackmyrun.core.utils.PermissionManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import com.example.trackmyrun.core.utils.UserManager
 import com.example.trackmyrun.core.utils.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
 import android.bluetooth.BluetoothServerSocket
@@ -38,13 +39,15 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import android.content.Context
+import kotlinx.coroutines.Job
 import java.io.IOException
 import java.util.UUID
 
 @SuppressLint("MissingPermission", "UnspecifiedRegisterReceiverFlag")
 class AndroidBluetoothController(
     @ApplicationContext private val context: Context,
-    private val permissionManager: PermissionManager
+    private val permissionManager: PermissionManager,
+    private val userManager: UserManager
 ): BluetoothController {
 
     companion object {
@@ -56,10 +59,10 @@ class AndroidBluetoothController(
     private val _scannedDevices = MutableStateFlow<List<BluetoothDeviceDomain>>(emptyList())
     private val _pairedDevices = MutableStateFlow<List<BluetoothDeviceDomain>>(emptyList())
 
-    private val _isBluetoothEnabled = MutableStateFlow(false)
     private val _isDiscovering = MutableStateFlow(false)
     private val _isConnected = MutableStateFlow(false)
 
+    private val _isBluetoothEnabled = Channel<Boolean>()
     private val _makeDiscoverable = Channel<Boolean>()
     private val _errors = Channel<String>()
 
@@ -69,14 +72,14 @@ class AndroidBluetoothController(
     override val pairedDevices: StateFlow<List<BluetoothDeviceDomain>>
         get() = _pairedDevices.asStateFlow()
 
-    override val isBluetoothEnabled: StateFlow<Boolean>
-        get() = _isBluetoothEnabled.asStateFlow()
-
     override val isDiscovering: StateFlow<Boolean>
         get() = _isDiscovering.asStateFlow()
 
     override val isConnected: StateFlow<Boolean>
         get() = _isConnected.asStateFlow()
+
+    override val isBluetoothEnabled: Flow<Boolean>
+        get() = _isBluetoothEnabled.receiveAsFlow()
 
     override val makeDiscoverable: Flow<Boolean>
         get() = _makeDiscoverable.receiveAsFlow()
@@ -88,6 +91,8 @@ class AndroidBluetoothController(
     private val bluetoothAdapter = bluetoothManager.adapter
 
     private var dataTransferSerice: BluetoothDataTranferService? = null
+
+    private var makeDiscoverableJob: Job? = null
 
     private val bluetoothStateReceiver = BluetoothStateReceiver { isConnected, device ->
         if (bluetoothAdapter.bondedDevices.contains(device))
@@ -114,15 +119,18 @@ class AndroidBluetoothController(
     private var currentClientSocket: BluetoothSocket? = null
 
     init {
-        _isBluetoothEnabled.value = bluetoothAdapter.isEnabled
-        updatePairedDevices()
+        coroutineScope.launch {
+            _isBluetoothEnabled.send(bluetoothAdapter.isEnabled)
+        }
     }
 
     override fun startDiscovery() {
 
         if (!permissionManager.checkBluetoothPermission()) return
 
-        _isBluetoothEnabled.value = bluetoothAdapter.isEnabled
+        coroutineScope.launch {
+            _isBluetoothEnabled.send(bluetoothAdapter.isEnabled)
+        }
 
         if (bluetoothAdapter.isEnabled) {
             updatePairedDevices()
@@ -134,7 +142,9 @@ class AndroidBluetoothController(
 
         if (!permissionManager.checkBluetoothPermission()) return
 
-        _isBluetoothEnabled.value = bluetoothAdapter.isEnabled
+        coroutineScope.launch {
+            _isBluetoothEnabled.send(bluetoothAdapter.isEnabled)
+        }
 
         if (bluetoothAdapter.isEnabled)
             bluetoothAdapter.cancelDiscovery()
@@ -145,9 +155,11 @@ class AndroidBluetoothController(
         if (!permissionManager.checkBluetoothPermission())
             throw SecurityException("No bluetooth connect permission granted")
 
-        _isBluetoothEnabled.value = bluetoothAdapter.isEnabled
+        coroutineScope.launch {
+            _isBluetoothEnabled.send(bluetoothAdapter.isEnabled)
+        }
 
-        if (bluetoothAdapter.isEnabled) return@flow
+        if (!bluetoothAdapter.isEnabled) return@flow
 
         currentClientSocket = bluetoothAdapter
             .getRemoteDevice(device.address)
@@ -167,19 +179,18 @@ class AndroidBluetoothController(
 
                 dataTransferSerice = BluetoothDataTranferService(socket)
 
+                val friend = FriendModel(
+                    startTimestamp = System.currentTimeMillis(),
+                    name = userManager.currentUser.value.name,
+                    id = userManager.currentUser.value.id!!
+                )
+
                 emitAll(
                     dataTransferSerice
                         ?.listenForIncomingMessages()
                         ?.onStart {
-                            trySendMessage(
-                                Json.encodeToString(
-                                    FriendModel(
-                                        startTimestamp = System.currentTimeMillis(),
-                                        name = "ciaooooo <NAME>",
-                                        id = "<ID>"
-                                    )
-                                )
-                            )
+                            // TODO: per mantenere il modulo BLuetooth indipendente, l'invio del messaggio non può essere fatto qui...
+                            trySendMessage(Json.encodeToString(friend))
                         }
                         ?.map { message ->
                             ConnectionResult.TransferSucceeded(
@@ -193,7 +204,7 @@ class AndroidBluetoothController(
                 socket.close()
                 currentClientSocket = null
                 _errors.send("Connection was interrupted")
-                emit(ConnectionResult.Error("Connection was interrupted"))
+                emit(ConnectionResult.Error)
             }
         }
     }
@@ -207,9 +218,11 @@ class AndroidBluetoothController(
         if (!permissionManager.checkBluetoothPermission())
             throw SecurityException("No bluetooth connect permission granted")
 
-        _isBluetoothEnabled.value = bluetoothAdapter.isEnabled
+        coroutineScope.launch {
+            _isBluetoothEnabled.send(bluetoothAdapter.isEnabled)
+        }
 
-        if (bluetoothAdapter.isEnabled) return@flow
+        if (!bluetoothAdapter.isEnabled) return@flow
 
         currentServerSocket = bluetoothAdapter.listenUsingRfcommWithServiceRecord("chat_service", UUID.fromString(SERVICE_UUID))
 
@@ -235,19 +248,18 @@ class AndroidBluetoothController(
 
                 dataTransferSerice = BluetoothDataTranferService(it)
 
+                val friend = FriendModel(
+                    startTimestamp = System.currentTimeMillis(),
+                    name = userManager.currentUser.value.name,
+                    id = userManager.currentUser.value.id!!
+                )
+
                 emitAll(
                     dataTransferSerice
                         ?.listenForIncomingMessages()
                         ?.onStart {
-                            trySendMessage(
-                                Json.encodeToString(
-                                    FriendModel(
-                                        startTimestamp = System.currentTimeMillis(),
-                                        name = "ciaooooo <NAME>",
-                                        id = "<ID>"
-                                    )
-                                )
-                            )
+                            // TODO: per mantenere il modulo BLuetooth indipendente, l'invio del messaggio non può essere fatto qui...
+                            trySendMessage(Json.encodeToString(friend))
                         }
                         ?.map { message ->
                             ConnectionResult.TransferSucceeded(message)
@@ -262,11 +274,19 @@ class AndroidBluetoothController(
     .flowOn(Dispatchers.IO)
 
     override fun makeDiscoverable() {
-        coroutineScope.launch {
+        makeDiscoverableJob = coroutineScope.launch {
             while (isActive) {
                 _makeDiscoverable.send(true)
                 delay((Constants.BLUETOOTH_DISCOVERABLE_INTERVAL_SEC) * 1000)
             }
+        }
+    }
+
+    override fun makeUndiscovered() {
+        coroutineScope.launch {
+            _makeDiscoverable.send(false)
+            makeDiscoverableJob?.cancel()
+            makeDiscoverableJob = null
         }
     }
 
@@ -276,12 +296,14 @@ class AndroidBluetoothController(
 
         if (dataTransferSerice == null) return null
 
-        _isBluetoothEnabled.value = bluetoothAdapter.isEnabled
+        coroutineScope.launch {
+            _isBluetoothEnabled.send(bluetoothAdapter.isEnabled)
+        }
 
-        if (bluetoothAdapter.isEnabled) return null
+        if (!bluetoothAdapter.isEnabled) return null
 
         val bluetoothMessage = BluetoothMessage(
-            senderName = bluetoothAdapter.name ?: "Unknown name",
+            senderName = bluetoothAdapter.name ?: "(No name)",
             isFromLocalUser = true,
             message = message
         )
@@ -292,8 +314,12 @@ class AndroidBluetoothController(
     }
 
     override fun closeConnection() {
+
+        makeDiscoverableJob?.cancel()
         currentClientSocket?.close()
         currentServerSocket?.close()
+
+        makeDiscoverableJob = null
         currentClientSocket = null
         currentServerSocket = null
     }
