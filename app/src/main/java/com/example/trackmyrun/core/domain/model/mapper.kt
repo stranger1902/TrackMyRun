@@ -30,7 +30,7 @@ fun FriendEntity.toModel(): FriendModel = FriendModel(
     id = id
 )
 
-fun FriendModel.toModel(): FriendEntity = FriendEntity(
+fun FriendModel.toEntity(): FriendEntity = FriendEntity(
     startTimestamp = startTimestamp,
     name = name,
     id = id

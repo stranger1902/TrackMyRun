@@ -1,8 +1,8 @@
 package com.example.trackmyrun.bluetooth.presentation
 
-import com.example.trackmyrun.bluetooth.presentation.component.ObserveAsEvents
 import com.example.trackmyrun.bluetooth.presentation.component.DeviceScreen
 import com.example.trackmyrun.bluetooth.presentation.component.ChatScreen
+import com.example.trackmyrun.core.presentation.ObserveAsEvents
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize

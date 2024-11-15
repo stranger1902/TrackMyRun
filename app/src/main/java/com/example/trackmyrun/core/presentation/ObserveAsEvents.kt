@@ -1,4 +1,4 @@
-package com.example.trackmyrun.bluetooth.presentation.component
+package com.example.trackmyrun.core.presentation
 
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.runtime.LaunchedEffect
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import androidx.lifecycle.Lifecycle
 
 @Composable
-fun <T> ObserveAsEvents(flow: Flow<T>, onEvent: (T) -> Unit) {
+fun <T> ObserveAsEvents(flow: Flow<T>, onEvent: suspend (T) -> Unit) {
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
