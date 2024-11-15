@@ -17,8 +17,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun IsConnectingScreen(
-    modifier: Modifier = Modifier
+fun WaitingScreen(
+    modifier: Modifier = Modifier,
+    text: String
 ) {
 
     Column(
@@ -35,9 +36,9 @@ fun IsConnectingScreen(
         )
 
         Text(
-            text = "In attesa di ricevere una nuova richiesta di amicizia..",
             textAlign = TextAlign.Center,
             fontSize = 18.sp,
+            text = text,
             modifier = Modifier
                 .padding(16.dp)
         )

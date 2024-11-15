@@ -17,6 +17,7 @@ import androidx.navigation.navigation
 import androidx.compose.ui.Modifier
 import androidx.navigation.toRoute
 import com.example.trackmyrun.R
+import android.widget.Toast
 
 fun NavGraphBuilder.registerMainGraph(navController: NavHostController) {
 
@@ -63,6 +64,7 @@ fun NavGraphBuilder.registerMainGraph(navController: NavHostController) {
                     navController.also {
                         it.popBackStack()
                         it.navigate(MainGraph)
+                        Toast.makeText(navController.context, "Un nuovo amico è stato aggiunto alla lista", Toast.LENGTH_SHORT).show()
                     }
                 },
                 modifier = Modifier
