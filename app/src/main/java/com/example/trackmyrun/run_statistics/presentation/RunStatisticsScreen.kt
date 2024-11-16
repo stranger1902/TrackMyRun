@@ -271,10 +271,15 @@ fun StatisticsScreen(
             )
         }
 
-        if ((runsKcalBurned?.size ?: 0) >= 2)
+        // TODO: workaround to resolve the OrderBy.END issue in LineGraph...
+        val runsKcalBurnedToShow = remember(runsKcalBurned) {
+            runsKcalBurned?.take(4)
+        }
+
+        if ((runsKcalBurnedToShow?.size ?: 0) >= 2)
             LineGraph(
-                labelsAxisX = runsKcalBurned!!.map { it.startTimestamp.toShortDateFormat() },
-                data = runsKcalBurned!!.map { it.kcalBurned },
+                labelsAxisX = runsKcalBurnedToShow!!.map { it.startTimestamp.toShortDateFormat() },
+                data = runsKcalBurnedToShow.map { it.kcalBurned },
                 modifier = modifier
                     .fillMaxWidth()
                     .height(300.dp)
