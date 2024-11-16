@@ -73,6 +73,10 @@ fun NewRunScreen(
 
         val context = LocalContext.current
 
+        var isMyLocationEnabled by rememberSaveable {
+            mutableStateOf(true)
+        }
+
         var takeSnapshot by rememberSaveable {
             mutableStateOf(false)
         }
@@ -97,11 +101,11 @@ fun NewRunScreen(
             )
         }
 
-        val properties by remember {
+        val properties by remember(isMyLocationEnabled) {
             mutableStateOf(
                 MapProperties(
+                    isMyLocationEnabled = isMyLocationEnabled,
                     mapStyleOptions = mapsStyle,
-                    isMyLocationEnabled = true,
                     mapType = MapType.NORMAL
                 )
             )
@@ -136,6 +140,8 @@ fun NewRunScreen(
             MapEffect(takeSnapshot) { map ->
 
                 if (takeSnapshot) {
+
+                    isMyLocationEnabled = false
 
                     LatLngBounds.Builder().apply {
                         currentRun.pathPointList.flatMap { pathPoint ->
