@@ -16,6 +16,6 @@ interface StatisticsDao {
             "FROM RUN")
     suspend fun getStatistics(): RunStatisticsModel
 
-    @Query("SELECT kcalBurned AS kcalBurned, startTimestamp AS startTimestamp FROM RUN")
+    @Query("SELECT kcalBurned AS kcalBurned, startTimestamp AS startTimestamp FROM RUN ORDER BY startTimestamp DESC LIMIT 10")
     suspend fun getRunsKcalburned(): List<RunKcalBurnedModel>
 }
