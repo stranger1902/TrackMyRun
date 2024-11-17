@@ -1,5 +1,6 @@
 package com.example.trackmyrun.run_statistics.presentation.component
 
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.example.trackmyrun.core.theme.TrackMyRunTheme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.runtime.Composable
@@ -31,6 +31,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
 
+enum class OrderBy {
+    START, END
+}
+
 data class LineGraphConfig(
     val minHorizontalPaddingLabelsX: Dp,
     val labelsAxisXTextStyle: TextStyle,
@@ -40,8 +44,23 @@ data class LineGraphConfig(
     val borderColor: Color,
     val pointColor: Color,
     val pathColor: Color,
-    val lineColor: Color
+    val lineColor: Color,
+    val orderBy: OrderBy
 )
+
+private fun getIndex(index: Int, size: Int, orderBy: OrderBy): Int {
+    return when(orderBy) {
+        OrderBy.END -> size - 1 - index
+        OrderBy.START -> index
+    }
+}
+
+private fun getShift(value: Int, size: Int, orderBy: OrderBy): Int {
+    return when(orderBy) {
+        OrderBy.END -> -(size - value)
+        OrderBy.START -> size - value
+    }
+}
 
 @Composable
 fun LineGraph(
@@ -57,6 +76,7 @@ fun LineGraph(
         minHorizontalPaddingLabelsX = 16.dp,
         minVerticalPaddingLabelsY = 24.dp,
         contentPadding = 8.dp,
+        orderBy = OrderBy.END,
         labelsAxisXTextStyle = TextStyle(
             background = if (isDebug) MaterialTheme.colorScheme.onSurfaceVariant else Color.Unspecified,
             color = MaterialTheme.colorScheme.onSurface,
@@ -83,25 +103,19 @@ fun LineGraph(
 
     if (data.size < 2) throw RuntimeException("Graph must contains at least 2 items")
 
-    val textMeauser = rememberTextMeasurer()
-
-    val visibleData by remember {
-        mutableStateOf(
-            data.take(10)
-        )
-    }
-
-    var minValueLabelAxisY by remember {
+    var minValueLabelAxisY by rememberSaveable {
         mutableFloatStateOf(0f)
     }
 
-    val maxValue = remember {
-        visibleData.max()
+    val maxValue = rememberSaveable(data) {
+        data.max()
     }
 
-    val minValue = remember {
-        visibleData.min()
+    val minValue = rememberSaveable(data) {
+        data.min()
     }
+
+    val textMeasurer = rememberTextMeasurer()
 
     Canvas(
         modifier = modifier
@@ -122,13 +136,13 @@ fun LineGraph(
         ) {
 
             val textMeasureResultLabelsAxisX = labelsAxisX.map {
-                textMeauser.measure(
+                textMeasurer.measure(
                     style = lineGraphConfig.labelsAxisXTextStyle,
                     text = it
                 )
             }
 
-            val maxValueTextMeasureResultLabelsAxisY = textMeauser.measure(
+            val maxValueTextMeasureResultLabelsAxisY = textMeasurer.measure(
                 text = "%.2f".format(maxValue),
                 style = lineGraphConfig.labelsAxisYTextStyle,
             )
@@ -161,7 +175,7 @@ fun LineGraph(
 
             val counterLabelsY = ((viewPortHeightLabelsAxisY - spacePx) / containerHeightLabelY).roundToInt()
 
-            val step = ((maxValue - minValue) / (counterLabelsY - 1)).roundToInt()
+            val step = ((maxValue - minValue) / (counterLabelsY - 1))
 
             val spaceFilledByLabelsY = containerHeightLabelY * counterLabelsY.toFloat()
             val spaceRemained = viewPortHeightLabelsAxisY - spaceFilledByLabelsY
@@ -169,19 +183,35 @@ fun LineGraph(
             minValueLabelAxisY = maxValue - (step * (counterLabelsY - 1))
 
             if (isDebug)
-                println("DEBUG -> viewPortHeightLabelsAxisY: $viewPortHeightLabelsAxisY - spaceFilledByLabelsY: $spaceFilledByLabelsY - spaceRemained: ($spaceRemained) - containerHeightLabelY: $containerHeightLabelY - counter: $counterLabelsY - maxValue: ${visibleData.max()} - minValue: ${visibleData.min()} - step: $step - minValueLabelAxisY: $minValueLabelAxisY")
+                println("DEBUG -> viewPortHeightLabelsAxisY: $viewPortHeightLabelsAxisY - spaceFilledByLabelsY: $spaceFilledByLabelsY - spaceRemained: ($spaceRemained) - containerHeightLabelY: $containerHeightLabelY - counter: $counterLabelsY - maxValue: ${maxValue} - minValue: ${minValue} - step: $step - minValueLabelAxisY: $minValueLabelAxisY")
 
             spacePx += spaceRemained / (counterLabelsY * 2f)
             containerHeightLabelY = heightLabelsAxisY + (spacePx * 2f)
 
-            (0..< counterLabelsY).forEach { index ->
+            (0..< counterLabelsY).forEach { i ->
 
-                val measureResult = textMeauser.measure(
+                val index = getIndex(i, counterLabelsY, lineGraphConfig.orderBy)
+
+                val measureResult = textMeasurer.measure(
                     text = "%.2f".format(maxValue - (step * index)),
                     style = lineGraphConfig.labelsAxisYTextStyle
                 )
 
-                if (isDebug)
+                if (isDebug) {
+
+                    drawRect(
+                        style = Stroke(4f),
+                        color = Color.Yellow,
+                        topLeft = Offset(
+                            y = spacePx + (index * containerHeightLabelY),
+                            x = 0f,
+                        ),
+                        size = Size(
+                            height = heightLabelsAxisY,
+                            width = widthLabelsAxisY
+                        )
+                    )
+
                     drawLine(
                         color = lineGraphConfig.lineColor,
                         start = Offset(
@@ -193,6 +223,7 @@ fun LineGraph(
                             x = viewPortWidthLabelsAxisX + widthLabelsAxisY
                         )
                     )
+                }
 
                 drawText(
                     textLayoutResult = measureResult,
@@ -226,7 +257,7 @@ fun LineGraph(
 
             var containerWidthLabelX = widthLabelsAxisX + (spacePx2 * 2f)
 
-            val counterLabelsX = ((viewPortWidthLabelsAxisX - spacePx2) / containerWidthLabelX).roundToInt().coerceAtMost(visibleData.size)
+            val counterLabelsX = ((viewPortWidthLabelsAxisX - spacePx2) / containerWidthLabelX).roundToInt().coerceAtMost(data.size)
 
             val spaceFilledByLabelsX = (containerWidthLabelX * counterLabelsX)
             val spaceRemained2 = viewPortWidthLabelsAxisX - spaceFilledByLabelsX
@@ -241,7 +272,9 @@ fun LineGraph(
 
             (0..< counterLabelsX).forEach { index ->
 
-                val measureResult = textMeasureResultLabelsAxisX[index]
+                val accessIndex = getIndex(index, textMeasureResultLabelsAxisX.size, lineGraphConfig.orderBy) + getShift(counterLabelsX, textMeasureResultLabelsAxisX.size, lineGraphConfig.orderBy)
+
+                val measureResult = textMeasureResultLabelsAxisX[accessIndex]
 
                 if (isDebug)
                     drawRect(
@@ -287,10 +320,12 @@ fun LineGraph(
 
             (0..< counterLabelsX).forEach { index ->
 
-                // [minValueLabelAxisY : maxYValue] -> [0 : 1]
-                val ratio = 1 - ((visibleData[index] - minValueLabelAxisY) / (maxValue - minValueLabelAxisY))
+                val accessIndex = getIndex(index, textMeasureResultLabelsAxisX.size, lineGraphConfig.orderBy) + getShift(counterLabelsX, textMeasureResultLabelsAxisX.size, lineGraphConfig.orderBy)
 
-                if (isDebug) println("DEBUG -> value: ${visibleData[index]} - ratio: $ratio")
+                // [minValueLabelAxisY : maxYValue] -> [0 : 1]
+                val ratio = 1 - ((data[accessIndex] - minValueLabelAxisY) / (maxValue - minValueLabelAxisY))
+
+                if (isDebug) println("DEBUG -> value: ${data[accessIndex]} - ratio: $ratio")
 
                 drawPoints.add(
                     Offset(
@@ -381,12 +416,15 @@ fun LineGraphExample(
 ) {
 
     val data = remember {
-        listOf(34f, 24f, 77f, 125f, 48f, 4f, 22f, 84f, 26f, 62f)
+        // listOf(0.0068334336f, 0.0f, 0.032974254f, 2.6313756f, 1.2419505f, 0.16757672f, 1.2419505f)
+        // listOf(34f, 24f, 77f, 125f, 48f, 4f, 22f, 84f, 26f, 62f)
+        listOf(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f, 10f, 11f)
         // listOf(0.16714206f, 15.898576f, 6.098382f)
+        // listOf(1f, 2f, 3f, 4f)
     }
 
     LineGraph(
-        labelsAxisX = data.map { it.toString() },
+        labelsAxisX = data.map { "%.2f".format(it) },
         isDebug = isDebug,
         data = data,
         modifier = modifier
