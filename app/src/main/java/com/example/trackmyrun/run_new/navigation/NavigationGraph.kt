@@ -6,11 +6,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import androidx.compose.ui.Modifier
 import androidx.navigation.toRoute
-import com.example.trackmyrun.R
 
 fun NavGraphBuilder.registerNewRunGraph(navController: NavHostController, onCloseRunDetail: () -> Unit) {
 
@@ -18,13 +16,7 @@ fun NavGraphBuilder.registerNewRunGraph(navController: NavHostController, onClos
         startDestination = NewRunDestination.NewRunScreen
     ) {
 
-        composable<NewRunDestination.NewRunScreen> (
-            deepLinks = listOf(
-                navDeepLink<NewRunDestination.NewRunScreen>(
-                    basePath = navController.context.getString(R.string.run_screen_deeplink)
-                )
-            )
-        ) {
+        composable<NewRunDestination.NewRunScreen> {
             NewRunScreen(
                 modifier = Modifier
                     .fillMaxSize(),

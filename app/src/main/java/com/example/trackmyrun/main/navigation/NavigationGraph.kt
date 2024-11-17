@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import androidx.compose.ui.Modifier
+import com.example.trackmyrun.R
 import android.widget.Toast
 
 fun NavGraphBuilder.registerMainGraph(navController: NavHostController) {
@@ -48,7 +50,13 @@ fun NavGraphBuilder.registerMainGraph(navController: NavHostController) {
             )
         }
 
-        composable<MainDestination.NewRunGraph> {
+        composable<MainDestination.NewRunGraph>(
+            deepLinks = listOf(
+                navDeepLink<MainDestination.NewRunGraph>(
+                    basePath = navController.context.getString(R.string.run_screen_deeplink)
+                )
+            )
+        ) {
             NewRunMainScreen(
                 onCloseRunDetail = {
                     navController.navigate(MainGraph) {
