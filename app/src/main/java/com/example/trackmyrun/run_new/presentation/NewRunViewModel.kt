@@ -29,6 +29,8 @@ class NewRunViewModel @Inject constructor(
     val countdownIsRunning = countdownManager.isRunning
     val countdown = countdownManager.countdown
 
+    val isGpsEnabled = runTrackingManager.isGpsEnabled
+
     val state = runTrackingManager.runTrackingState
 
     fun startRunning() {

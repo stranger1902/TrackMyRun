@@ -36,11 +36,17 @@ object ServiceModule {
 
     @Provides
     @Singleton
-    fun provideRunTrackingManager(gpsLocationManager: GpsLocationManager, timerManager: TimerManager, userManager: UserManager): RunTrackingManager {
+    fun provideRunTrackingManager(
+        gpsLocationManager: GpsLocationManager,
+        @ApplicationContext context: Context,
+        timerManager: TimerManager,
+        userManager: UserManager
+    ): RunTrackingManager {
         return RunTrackingManager(
             gpsLocationManager = gpsLocationManager,
             timerManager = timerManager,
-            userManager = userManager
+            userManager = userManager,
+            context = context
         )
     }
 

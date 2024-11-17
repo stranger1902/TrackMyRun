@@ -41,6 +41,12 @@ class RunTrackingService: Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    override fun onCreate() {
+        super.onCreate().also {
+            runTrackingManager.registerLocationReceiver()
+        }
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         super.onStartCommand(intent, flags, startId)
@@ -66,10 +72,12 @@ class RunTrackingService: Service() {
         if (runTrackingJob == null)
             runTrackingJob = combine(
                 runTrackingManager.currentGpsLocation,
-                runTrackingManager.timeElapsedMillis
-            ) { gpsLocation, timeElapsedMillis ->
+                runTrackingManager.timeElapsedMillis,
+                runTrackingManager.isGpsEnabled
+            ) { gpsLocation, timeElapsedMillis, isGpsEnabled ->
                 TrackingInfoModel(
                     timeElapsedMillis = timeElapsedMillis,
+                    isGpsEnabled = isGpsEnabled,
                     gpsLocation = gpsLocation
                 )
             }
@@ -80,6 +88,11 @@ class RunTrackingService: Service() {
                 old.timeElapsedMillis == new.timeElapsedMillis
             }
             .onEach {
+
+                if (!it.isGpsEnabled) {
+                    pauseTracking()
+                    return@onEach
+                }
 
                 notificationManager.updateServiceTrackingNotification(true, it.timeElapsedMillis)
 
@@ -115,6 +128,7 @@ class RunTrackingService: Service() {
 
         super.onDestroy()
 
+        runTrackingManager.unRegisterLocationReceiver()
         runTrackingJob = null
         serviceScope.cancel()
         isLaunched = false
