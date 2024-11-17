@@ -31,5 +31,7 @@ interface BluetoothController {
     suspend fun trySendMessage(message: String): BluetoothMessageModel?
 
     fun registerBluetoothReceivers()
+
+    fun resetState()
     fun release()
 }

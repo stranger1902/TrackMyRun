@@ -161,7 +161,11 @@ class RunFriendViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared().also {
-            bluetoothController.makeUndiscovered()
+            stopScan().also {
+                bluetoothController.makeUndiscovered()
+                bluetoothController.closeConnection()
+                bluetoothController.resetState()
+            }
         }
     }
 

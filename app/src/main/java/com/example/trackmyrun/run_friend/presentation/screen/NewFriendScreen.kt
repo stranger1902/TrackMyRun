@@ -78,15 +78,16 @@ fun NewFriendScreen(
             }
         }
 
-        BluetoothDeviceList(
-            scannedDevices = scannedDevices,
-            pairedDevices = pairedDevices,
-            onClick = { device ->
-                onDeviceClick(device)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        )
+        if (!(scannedDevices.isEmpty() && pairedDevices.isEmpty()))
+            BluetoothDeviceList(
+                scannedDevices = scannedDevices,
+                pairedDevices = pairedDevices,
+                onClick = { device ->
+                    onDeviceClick(device)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
     }
 }

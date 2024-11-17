@@ -351,10 +351,16 @@ class AndroidBluetoothController(
         )
     }
 
+    override fun resetState() {
+        _scannedDevices.value = emptyList()
+        _pairedDevices.value = emptyList()
+    }
+
     override fun release() {
         context.unregisterReceiver(bluetoothStateReceiver)
         context.unregisterReceiver(foundDeviceReceiver)
         closeConnection()
+        resetState()
     }
 
     private fun updatePairedDevices() {
