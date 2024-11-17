@@ -167,7 +167,7 @@ fun NewRunScreen(
 
                 if (takeSnapshot) {
 
-                    if (currentRun.pathPointList.isEmpty()) {
+                    if (currentRun.pathPointList.firstOrNull()?.isEmpty() == true) {
                         viewModel.stopRunning()
                         return@MapEffect
                     }

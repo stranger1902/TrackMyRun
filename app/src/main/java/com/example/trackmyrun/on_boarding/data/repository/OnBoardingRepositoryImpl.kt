@@ -25,7 +25,7 @@ class OnBoardingRepositoryImpl(
         ),
 
         OnBoardingModel(
-            description = "Per registrare le tue corse, abbiamo bisogno del permesso di accedere alla tua posizione in tempo reale e del permesso di visualizzare la notifica del servizio di tracking della posizione in tempo reale.\n Non preoccuparti, i tuoi dati saranno al sicuro!",
+            description = "Per registrare le tue corse, abbiamo richiesto permesso di accedere alla tua posizione in tempo reale e il permesso di visualizzare la notifica del servizio di tracking della posizione in tempo reale.\nNon preoccuparti, i tuoi dati saranno al sicuro!",
             title = "Traccia il tuo percorso",
             resImage = R.drawable.screen_3
         ),

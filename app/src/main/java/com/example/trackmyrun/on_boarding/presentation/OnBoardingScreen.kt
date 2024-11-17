@@ -140,6 +140,7 @@ fun OnBoardingScreen(
                         when(currentPage) {
 
                             viewModel.onBoardingPageData.size - 1 -> {
+                                viewModel.saveUserInPreferences(Uuid.random().toHexString())
                                 onBoardingCompleted()
                             }
 
@@ -147,7 +148,6 @@ fun OnBoardingScreen(
                                 if (!viewModel.checkUser())
                                     Toast.makeText(context, "Compila tutti i campi", Toast.LENGTH_SHORT).show()
                                 else {
-                                    viewModel.saveUserInPreferences(Uuid.random().toHexString())
                                     viewModel.navigateNextPage()
                                 }
                             }
