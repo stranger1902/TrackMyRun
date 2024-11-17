@@ -11,7 +11,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.foundation.layout.height
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.text.font.FontStyle
@@ -80,10 +79,7 @@ fun MainScreen(
             )
         },
         bottomBar = {
-            BottomAppBar(
-                modifier = Modifier
-                    .height(64.dp)
-            ) {
+            BottomAppBar {
                 viewModel.bottomNavigationItems.forEachIndexed { index, item ->
                     NavigationBarItem(
                         selected = currentBottomNavigationItem == index,
@@ -116,8 +112,8 @@ fun MainScreen(
             startDestination = BottomNavigationGraph,
             navController = navController,
             modifier = Modifier
-                .padding(innerPadding)
                 .fillMaxSize()
+                .padding(innerPadding)
         ) {
             registerBottomNavigationGraph(onNewFriendClick, onNewRunClick)
         }

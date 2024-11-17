@@ -5,11 +5,14 @@ import com.example.trackmyrun.run_new.presentation.component.NewRunController
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.layout.navigationBars
 import com.example.trackmyrun.core.domain.model.RunModel
 import com.example.trackmyrun.core.domain.model.toLatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.CameraPosition
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import com.google.android.gms.maps.CameraUpdateFactory
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -22,7 +25,6 @@ import com.google.maps.android.compose.MapUiSettings
 import com.example.trackmyrun.core.utils.Constants
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.offset
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapEffect
 import androidx.compose.ui.platform.LocalContext
@@ -265,8 +267,8 @@ fun NewRunScreen(
                     }
                 },
                 modifier = Modifier
+                    .padding(WindowInsets.navigationBars.asPaddingValues())
                     .align(Alignment.BottomCenter)
-                    .offset(y = (-32).dp)
                     .padding(16.dp)
                     .fillMaxWidth()
             )
