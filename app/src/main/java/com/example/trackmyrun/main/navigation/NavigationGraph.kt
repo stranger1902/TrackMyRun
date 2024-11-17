@@ -1,21 +1,18 @@
 package com.example.trackmyrun.main.navigation
 
 import com.example.trackmyrun.run_statistics.presentation.StatisticsScreen
-import com.example.trackmyrun.run_detail.presentation.RunDetailScreen
 import com.example.trackmyrun.run_friend.presentation.RunFriendScreen
+import com.example.trackmyrun.run_new.presentation.NewRunMainScreen
 import com.example.trackmyrun.profile.presentation.ProfileScreen
-import com.example.trackmyrun.run_new.presentation.NewRunScreen
+import com.example.trackmyrun.home.presentation.HomeMainScreen
+import com.example.trackmyrun.run_new.navigation.NewRunGraph
 import com.example.trackmyrun.main.presentation.MainScreen
-import com.example.trackmyrun.home.presentation.HomeScreen
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import androidx.compose.ui.Modifier
-import androidx.navigation.toRoute
-import com.example.trackmyrun.R
 import android.widget.Toast
 
 fun NavGraphBuilder.registerMainGraph(navController: NavHostController) {
@@ -26,34 +23,14 @@ fun NavGraphBuilder.registerMainGraph(navController: NavHostController) {
 
         composable<MainDestination.MainScreen> {
             MainScreen(
-                mainGraphNavController = navController,
+                onNewFriendClick = {
+                    navController.navigate(MainDestination.RunFriendScreen)
+                },
+                onNewRunClick = {
+                    navController.navigate(NewRunGraph)
+                },
                 modifier = Modifier
                     .fillMaxSize()
-            )
-        }
-
-        composable<MainDestination.NewRunScreen>(
-            deepLinks = listOf(
-                navDeepLink<MainDestination.NewRunScreen>(
-                    basePath = navController.context.getString(R.string.run_screen_deeplink)
-                )
-            )
-        ) {
-            NewRunScreen(
-                modifier = Modifier
-                    .fillMaxSize(),
-                onNavigateToRunDetailScreen = { run ->
-                    navController.navigate(
-                        MainDestination.RunDetailScreen(
-                            isFromNewRun = true,
-                            runId = run.id
-                        )
-                    ) {
-                        popUpTo<MainGraph> {
-                            inclusive = true
-                        }
-                    }
-                }
             )
         }
 
@@ -71,19 +48,14 @@ fun NavGraphBuilder.registerMainGraph(navController: NavHostController) {
             )
         }
 
-        composable<MainDestination.RunDetailScreen> {
-
-            val args = it.toRoute<MainDestination.RunDetailScreen>()
-
-            RunDetailScreen(
-                runId = args.runId,
-                onBackPressed = {
-                    if (args.isFromNewRun) {
-                        navController.popBackStack()
-                        navController.navigate(MainGraph)
+        composable<MainDestination.NewRunGraph> {
+            NewRunMainScreen(
+                onCloseRunDetail = {
+                    navController.navigate(MainGraph) {
+                        popUpTo<MainGraph> {
+                            inclusive = true
+                        }
                     }
-                    else
-                        navController.popBackStack()
                 },
                 modifier = Modifier
                     .fillMaxSize()
@@ -93,10 +65,10 @@ fun NavGraphBuilder.registerMainGraph(navController: NavHostController) {
     }
 }
 
-fun NavGraphBuilder.registerBottomNavigationGraph(mainGraphNavController: NavHostController) {
+fun NavGraphBuilder.registerBottomNavigationGraph(onNewFriendClick: () -> Unit, onNewRunClick: () -> Unit) {
 
     navigation<BottomNavigationGraph>(
-        startDestination = BottomNavigationDestination.HomeScreen
+        startDestination = BottomNavigationDestination.HomeGraph
     ) {
 
         composable<BottomNavigationDestination.StatisticsScreen> {
@@ -108,27 +80,15 @@ fun NavGraphBuilder.registerBottomNavigationGraph(mainGraphNavController: NavHos
 
         composable<BottomNavigationDestination.ProfileScreen> {
             ProfileScreen(
+                onFloatingButtonClick = onNewFriendClick,
                 modifier = Modifier
-                    .fillMaxSize(),
-                onFloatingButtonClick = {
-                    mainGraphNavController.navigate(MainDestination.RunFriendScreen)
-                }
+                    .fillMaxSize()
             )
         }
 
-        composable<BottomNavigationDestination.HomeScreen> {
-            HomeScreen(
-                onNavigateToRunDetailScreen = { run ->
-                    mainGraphNavController.navigate(
-                        MainDestination.RunDetailScreen(
-                            isFromNewRun = false,
-                            runId = run.id
-                        )
-                    )
-                },
-                onFloatingButtonClick = {
-                    mainGraphNavController.navigate(MainDestination.NewRunScreen)
-                },
+        composable<BottomNavigationDestination.HomeGraph> {
+            HomeMainScreen(
+                onNewRunClick = onNewRunClick,
                 modifier = Modifier
                     .fillMaxSize()
             )

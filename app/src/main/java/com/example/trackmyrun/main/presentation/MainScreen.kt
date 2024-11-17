@@ -18,7 +18,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavHostController
 import androidx.compose.material3.TopAppBar
 import androidx.navigation.compose.NavHost
 import androidx.compose.material3.Scaffold
@@ -38,7 +37,8 @@ import com.example.trackmyrun.R
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    mainGraphNavController: NavHostController
+    onNewFriendClick: () -> Unit,
+    onNewRunClick: () -> Unit
 ) {
 
     val viewModel = hiltViewModel<MainViewModel>()
@@ -119,7 +119,7 @@ fun MainScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            registerBottomNavigationGraph(mainGraphNavController)
+            registerBottomNavigationGraph(onNewFriendClick, onNewRunClick)
         }
     }
 
