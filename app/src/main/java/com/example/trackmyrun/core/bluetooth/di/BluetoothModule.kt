@@ -1,7 +1,7 @@
-package com.example.trackmyrun.bluetooth.di
+package com.example.trackmyrun.core.bluetooth.di
 
-import com.example.trackmyrun.bluetooth.data.chat.AndroidBluetoothController
-import com.example.trackmyrun.bluetooth.domain.chat.BluetoothController
+import com.example.trackmyrun.core.bluetooth.domain.interfaces.BluetoothController
+import com.example.trackmyrun.core.bluetooth.AndroidBluetoothController
 import com.example.trackmyrun.core.utils.PermissionManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.example.trackmyrun.core.utils.UserManager

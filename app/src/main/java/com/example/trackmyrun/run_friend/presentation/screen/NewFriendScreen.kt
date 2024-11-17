@@ -1,7 +1,7 @@
 package com.example.trackmyrun.run_friend.presentation.screen
 
 import com.example.trackmyrun.run_friend.presentation.component.BluetoothDeviceList
-import com.example.trackmyrun.bluetooth.domain.chat.BluetoothDeviceDomain
+import com.example.trackmyrun.core.bluetooth.domain.model.BluetoothDeviceModel
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
@@ -22,10 +22,10 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun NewFriendScreen(
     modifier: Modifier = Modifier,
-    scannedDevices: List<BluetoothDeviceDomain>,
-    pairedDevices: List<BluetoothDeviceDomain>,
+    scannedDevices: List<BluetoothDeviceModel>,
+    pairedDevices: List<BluetoothDeviceModel>,
     isDiscovering: Boolean,
-    onDeviceClick: (BluetoothDeviceDomain) -> Unit,
+    onDeviceClick: (device: BluetoothDeviceModel) -> Unit,
     onStartServer: () -> Unit,
     onStartScan: () -> Unit,
     onStopScan: () -> Unit

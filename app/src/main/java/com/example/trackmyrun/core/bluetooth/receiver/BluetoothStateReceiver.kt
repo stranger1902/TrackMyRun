@@ -1,4 +1,4 @@
-package com.example.trackmyrun.bluetooth.data.chat
+package com.example.trackmyrun.core.bluetooth.receiver
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice

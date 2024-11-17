@@ -1,12 +1,14 @@
-package com.example.trackmyrun.bluetooth.domain.chat
+package com.example.trackmyrun.core.bluetooth.domain.interfaces
 
+import com.example.trackmyrun.core.bluetooth.domain.model.BluetoothDeviceModel
+import com.example.trackmyrun.core.bluetooth.domain.model.BluetoothMessageModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.Flow
 
 interface BluetoothController {
 
-    val scannedDevices: StateFlow<List<BluetoothDeviceDomain>>
-    val pairedDevices: StateFlow<List<BluetoothDeviceDomain>>
+    val scannedDevices: StateFlow<List<BluetoothDeviceModel>>
+    val pairedDevices: StateFlow<List<BluetoothDeviceModel>>
 
     val isDiscovering: StateFlow<Boolean>
     val isConnected: StateFlow<Boolean>
@@ -18,7 +20,7 @@ interface BluetoothController {
     fun startDiscovery()
     fun stopDiscovery()
 
-    fun connectToDevice(device: BluetoothDeviceDomain): Flow<ConnectionResult>
+    fun connectToDevice(device: BluetoothDeviceModel): Flow<ConnectionResult>
     fun startBluetoothServer(): Flow<ConnectionResult>
 
     fun makeUndiscovered()
@@ -26,7 +28,7 @@ interface BluetoothController {
 
     fun closeConnection()
 
-    suspend fun trySendMessage(message: String): BluetoothMessage?
+    suspend fun trySendMessage(message: String): BluetoothMessageModel?
 
     fun registerBluetoothReceivers()
     fun release()

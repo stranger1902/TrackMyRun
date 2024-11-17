@@ -1,10 +1,10 @@
 package com.example.trackmyrun.run_friend.presentation
 
-import com.example.trackmyrun.bluetooth.domain.chat.BluetoothDeviceDomain
+import com.example.trackmyrun.core.bluetooth.domain.interfaces.BluetoothController
+import com.example.trackmyrun.core.bluetooth.domain.interfaces.ConnectionResult
+import com.example.trackmyrun.core.bluetooth.domain.model.BluetoothDeviceModel
+import com.example.trackmyrun.core.bluetooth.domain.model.BluetoothStateModel
 import com.example.trackmyrun.profile.domain.repository.FriendRepository
-import com.example.trackmyrun.bluetooth.domain.chat.BluetoothController
-import com.example.trackmyrun.bluetooth.presentation.BluetoothUiState
-import com.example.trackmyrun.bluetooth.domain.chat.ConnectionResult
 import com.example.trackmyrun.core.domain.model.FriendModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +32,7 @@ class RunFriendViewModel @Inject constructor(
     private val friendRepository: FriendRepository
     ): ViewModel() {
 
-    private val _state = MutableStateFlow(BluetoothUiState())
+    private val _state = MutableStateFlow(BluetoothStateModel())
 
     private var deviceConnectionJob: Job? = null
 
@@ -71,7 +71,7 @@ class RunFriendViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun connectToDevice(device: BluetoothDeviceDomain) {
+    fun connectToDevice(device: BluetoothDeviceModel) {
 
         _state.update { it.copy(isConnecting = true) }
 

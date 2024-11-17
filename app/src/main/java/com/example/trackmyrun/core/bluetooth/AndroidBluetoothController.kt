@@ -1,9 +1,13 @@
-package com.example.trackmyrun.bluetooth.data.chat
+package com.example.trackmyrun.core.bluetooth
 
-import com.example.trackmyrun.bluetooth.domain.chat.BluetoothDeviceDomain
-import com.example.trackmyrun.bluetooth.domain.chat.BluetoothController
-import com.example.trackmyrun.bluetooth.domain.chat.ConnectionResult
-import com.example.trackmyrun.bluetooth.domain.chat.BluetoothMessage
+import com.example.trackmyrun.core.bluetooth.domain.interfaces.BluetoothController
+import com.example.trackmyrun.core.bluetooth.domain.model.toBluetoothDeviceDomain
+import com.example.trackmyrun.core.bluetooth.domain.interfaces.ConnectionResult
+import com.example.trackmyrun.core.bluetooth.domain.model.BluetoothMessageModel
+import com.example.trackmyrun.core.bluetooth.domain.model.BluetoothDeviceModel
+import com.example.trackmyrun.core.bluetooth.receiver.BluetoothStateReceiver
+import com.example.trackmyrun.core.bluetooth.receiver.FoundDeviceReceiver
+import com.example.trackmyrun.core.bluetooth.domain.model.toByteArray
 import com.example.trackmyrun.core.domain.model.FriendModel
 import com.example.trackmyrun.core.utils.PermissionManager
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -56,8 +60,8 @@ class AndroidBluetoothController(
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private val _scannedDevices = MutableStateFlow<List<BluetoothDeviceDomain>>(emptyList())
-    private val _pairedDevices = MutableStateFlow<List<BluetoothDeviceDomain>>(emptyList())
+    private val _scannedDevices = MutableStateFlow<List<BluetoothDeviceModel>>(emptyList())
+    private val _pairedDevices = MutableStateFlow<List<BluetoothDeviceModel>>(emptyList())
 
     private val _isDiscovering = MutableStateFlow(false)
     private val _isConnected = MutableStateFlow(false)
@@ -66,10 +70,10 @@ class AndroidBluetoothController(
     private val _makeDiscoverable = Channel<Boolean>()
     private val _errors = Channel<String>()
 
-    override val scannedDevices: StateFlow<List<BluetoothDeviceDomain>>
+    override val scannedDevices: StateFlow<List<BluetoothDeviceModel>>
         get() = _scannedDevices.asStateFlow()
 
-    override val pairedDevices: StateFlow<List<BluetoothDeviceDomain>>
+    override val pairedDevices: StateFlow<List<BluetoothDeviceModel>>
         get() = _pairedDevices.asStateFlow()
 
     override val isDiscovering: StateFlow<Boolean>
@@ -90,7 +94,7 @@ class AndroidBluetoothController(
     private val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
     private val bluetoothAdapter = bluetoothManager.adapter
 
-    private var dataTransferSerice: BluetoothDataTranferService? = null
+    private var dataTransferSerice: BluetoothDataTransferManager? = null
 
     private var makeDiscoverableJob: Job? = null
 
@@ -150,7 +154,7 @@ class AndroidBluetoothController(
             bluetoothAdapter.cancelDiscovery()
     }
 
-    override fun connectToDevice(device: BluetoothDeviceDomain): Flow<ConnectionResult> = flow {
+    override fun connectToDevice(device: BluetoothDeviceModel): Flow<ConnectionResult> = flow {
 
         if (!permissionManager.checkBluetoothPermission())
             throw SecurityException("No bluetooth connect permission granted")
@@ -177,7 +181,7 @@ class AndroidBluetoothController(
 
                 updatePairedDevices()
 
-                dataTransferSerice = BluetoothDataTranferService(socket)
+                dataTransferSerice = BluetoothDataTransferManager(socket)
 
                 val friend = FriendModel(
                     startTimestamp = System.currentTimeMillis(),
@@ -224,7 +228,9 @@ class AndroidBluetoothController(
 
         if (!bluetoothAdapter.isEnabled) return@flow
 
-        currentServerSocket = bluetoothAdapter.listenUsingRfcommWithServiceRecord("chat_service", UUID.fromString(SERVICE_UUID))
+        currentServerSocket = bluetoothAdapter.listenUsingRfcommWithServiceRecord("chat_service", UUID.fromString(
+            SERVICE_UUID
+        ))
 
         var shouldLoop = true
 
@@ -246,7 +252,7 @@ class AndroidBluetoothController(
 
                 currentServerSocket?.close()
 
-                dataTransferSerice = BluetoothDataTranferService(it)
+                dataTransferSerice = BluetoothDataTransferManager(it)
 
                 val friend = FriendModel(
                     startTimestamp = System.currentTimeMillis(),
@@ -290,7 +296,7 @@ class AndroidBluetoothController(
         }
     }
 
-    override suspend fun trySendMessage(message: String): BluetoothMessage? {
+    override suspend fun trySendMessage(message: String): BluetoothMessageModel? {
 
         if (!permissionManager.checkBluetoothPermission()) return null
 
@@ -302,7 +308,7 @@ class AndroidBluetoothController(
 
         if (!bluetoothAdapter.isEnabled) return null
 
-        val bluetoothMessage = BluetoothMessage(
+        val bluetoothMessage = BluetoothMessageModel(
             senderName = bluetoothAdapter.name ?: "(No name)",
             isFromLocalUser = true,
             message = message

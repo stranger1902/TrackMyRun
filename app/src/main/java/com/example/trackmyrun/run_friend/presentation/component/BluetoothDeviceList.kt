@@ -1,6 +1,6 @@
 package com.example.trackmyrun.run_friend.presentation.component
 
-import com.example.trackmyrun.bluetooth.domain.chat.BluetoothDeviceDomain
+import com.example.trackmyrun.core.bluetooth.domain.model.BluetoothDeviceModel
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.layout.padding
@@ -16,9 +16,9 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun BluetoothDeviceList(
     modifier: Modifier = Modifier,
-    scannedDevices: List<BluetoothDeviceDomain>,
-    pairedDevices: List<BluetoothDeviceDomain>,
-    onClick: (BluetoothDeviceDomain) -> Unit
+    scannedDevices: List<BluetoothDeviceModel>,
+    pairedDevices: List<BluetoothDeviceModel>,
+    onClick: (device: BluetoothDeviceModel) -> Unit
 ) {
     LazyColumn(
         modifier = modifier

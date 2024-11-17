@@ -1,6 +1,7 @@
-package com.example.trackmyrun.bluetooth.data.chat
+package com.example.trackmyrun.core.bluetooth
 
-import com.example.trackmyrun.bluetooth.domain.chat.BluetoothMessage
+import com.example.trackmyrun.core.bluetooth.domain.model.BluetoothMessageModel
+import com.example.trackmyrun.core.bluetooth.domain.model.toBluetoothMessage
 import android.bluetooth.BluetoothSocket
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
@@ -9,13 +10,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.IOException
 
-class TransferFailedException: IOException("Reading incoming data failed")
-
-class BluetoothDataTranferService(
+class BluetoothDataTransferManager(
     private val socket: BluetoothSocket
 ) {
 
-    fun listenForIncomingMessages(): Flow<BluetoothMessage> = flow {
+    fun listenForIncomingMessages(): Flow<BluetoothMessageModel> = flow {
 
         if (!socket.isConnected) return@flow
 
@@ -23,11 +22,7 @@ class BluetoothDataTranferService(
 
         while (true) {
 
-            val byteCount = try {
-                socket.inputStream.read(buffer)
-            } catch (e: IOException) {
-                throw TransferFailedException()
-            }
+            val byteCount = socket.inputStream.read(buffer)
 
             emit(
                 buffer.decodeToString(

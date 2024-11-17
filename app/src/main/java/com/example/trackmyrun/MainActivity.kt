@@ -1,7 +1,7 @@
 package com.example.trackmyrun
 
+import com.example.trackmyrun.core.bluetooth.domain.interfaces.BluetoothController
 import com.example.trackmyrun.on_boarding.navigation.registerOnBoardingGraph
-import com.example.trackmyrun.bluetooth.domain.chat.BluetoothController
 import com.example.trackmyrun.on_boarding.navigation.OnBoardingGraph
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts

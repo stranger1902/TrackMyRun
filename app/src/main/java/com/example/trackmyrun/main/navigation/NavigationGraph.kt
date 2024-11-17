@@ -3,7 +3,6 @@ package com.example.trackmyrun.main.navigation
 import com.example.trackmyrun.run_statistics.presentation.StatisticsScreen
 import com.example.trackmyrun.run_detail.presentation.RunDetailScreen
 import com.example.trackmyrun.run_friend.presentation.RunFriendScreen
-import com.example.trackmyrun.bluetooth.presentation.BluetoothScreen
 import com.example.trackmyrun.profile.presentation.ProfileScreen
 import com.example.trackmyrun.run_new.presentation.NewRunScreen
 import com.example.trackmyrun.main.presentation.MainScreen
@@ -67,13 +66,6 @@ fun NavGraphBuilder.registerMainGraph(navController: NavHostController) {
                         Toast.makeText(navController.context, "Un nuovo amico è stato aggiunto alla lista", Toast.LENGTH_SHORT).show()
                     }
                 },
-                modifier = Modifier
-                    .fillMaxSize()
-            )
-        }
-
-        composable<MainDestination.BluetoothScreen> {
-            BluetoothScreen(
                 modifier = Modifier
                     .fillMaxSize()
             )

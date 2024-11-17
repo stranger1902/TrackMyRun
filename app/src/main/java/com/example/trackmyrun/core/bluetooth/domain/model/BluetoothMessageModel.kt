@@ -1,9 +1,9 @@
-package com.example.trackmyrun.bluetooth.domain.chat
+package com.example.trackmyrun.core.bluetooth.domain.model
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class BluetoothMessage(
+data class BluetoothMessageModel(
     val isFromLocalUser: Boolean,
     val senderName: String,
     val message: String
