@@ -14,9 +14,9 @@ fun Long.toStopwatchFormat(): String = toDuration(DurationUnit.MILLISECONDS).toC
         "%02d:%02d:%02d".format(hours, minutes, seconds)
     }
 
-fun Long.toShortDateFormat(): String = Instant.ofEpochMilli(this)
+fun Long.toLabelDateFormat(): String = Instant.ofEpochMilli(this)
     .atZone(ZoneId.systemDefault())
-    .format(DateTimeFormatter.ofPattern("dd MMM"))
+    .format(DateTimeFormatter.ofPattern("dd MMM\nHH:mm"))
 
 fun Long.toDateTimeFormat(): String = Instant.ofEpochMilli(this)
     .atZone(ZoneId.systemDefault())

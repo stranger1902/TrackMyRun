@@ -4,7 +4,7 @@ import com.example.trackmyrun.run_statistics.presentation.component.LineGraph
 import com.example.trackmyrun.core.extensions.toStopwatchUserFormat
 import com.example.trackmyrun.core.domain.model.RunStatisticsModel
 import com.example.trackmyrun.core.domain.model.RunKcalBurnedModel
-import com.example.trackmyrun.core.extensions.toShortDateFormat
+import com.example.trackmyrun.core.extensions.toLabelDateFormat
 import com.example.trackmyrun.core.extensions.shimmerEffect
 import com.example.trackmyrun.core.extensions.conditional
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -273,7 +273,7 @@ fun StatisticsScreen(
 
         if ((runsKcalBurned?.size ?: 0) >= 2)
             LineGraph(
-                labelsAxisX = runsKcalBurned!!.map { it.startTimestamp.toShortDateFormat() },
+                labelsAxisX = runsKcalBurned!!.map { it.startTimestamp.toLabelDateFormat() },
                 data = runsKcalBurned!!.map { it.kcalBurned },
                 modifier = modifier
                     .fillMaxWidth()
