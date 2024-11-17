@@ -34,18 +34,14 @@ class RunTrackingService: Service() {
     private var isLaunched = false
 
     companion object {
+        const val UNREGISTER_GPS_LISTENER = "UNREGISTER_GPS"
+        const val REGISTER_GPS_LISTENER = "REGISTER_GPS"
         const val START_RUN_TRACKING = "START_TRACKING"
         const val PAUSE_RUN_TRACKING = "PAUSE_TRACKING"
         const val STOP_RUN_TRACKING = "STOP_TRACKING"
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
-
-    override fun onCreate() {
-        super.onCreate().also {
-            runTrackingManager.registerLocationReceiver()
-        }
-    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
@@ -54,6 +50,8 @@ class RunTrackingService: Service() {
         val action = intent?.action
 
         when(action) {
+            UNREGISTER_GPS_LISTENER -> runTrackingManager.unRegisterLocationReceiver()
+            REGISTER_GPS_LISTENER -> runTrackingManager.registerLocationReceiver()
             START_RUN_TRACKING -> startTracking()
             PAUSE_RUN_TRACKING -> pauseTracking()
             STOP_RUN_TRACKING -> stopTracking()
@@ -128,7 +126,6 @@ class RunTrackingService: Service() {
 
         super.onDestroy()
 
-        runTrackingManager.unRegisterLocationReceiver()
         runTrackingJob = null
         serviceScope.cancel()
         isLaunched = false

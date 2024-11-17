@@ -11,6 +11,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.trackmyrun.core.utils.PermissionManager
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.trackmyrun.core.theme.TrackMyRunTheme
+import com.example.trackmyrun.service.RunTrackingService
 import androidx.navigation.compose.rememberNavController
 import com.example.trackmyrun.main.navigation.MainGraph
 import androidx.compose.runtime.rememberCoroutineScope
@@ -56,6 +57,11 @@ class MainActivity: ComponentActivity() {
 
         enableEdgeToEdge()
 
+        Intent(applicationContext, RunTrackingService::class.java).apply {
+            action = RunTrackingService.REGISTER_GPS_LISTENER
+            applicationContext.startService(this)
+        }
+
         bluetoothController.registerBluetoothReceivers()
 
         setContent {
@@ -65,7 +71,7 @@ class MainActivity: ComponentActivity() {
             val coroutineScope = rememberCoroutineScope()
 
             val makeDiscoverableLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                // TODO: segnalare la risposta dell'utente...
+                // TODO: ???segnalare la risposta dell'utente???
             }
 
             val enableBluetoothLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -145,9 +151,15 @@ class MainActivity: ComponentActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy().also {
-            bluetoothController.release()
+
+        super.onDestroy()
+
+        Intent(applicationContext, RunTrackingService::class.java).apply {
+            action = RunTrackingService.UNREGISTER_GPS_LISTENER
+            applicationContext.startService(this)
         }
+
+        bluetoothController.release()
     }
 
 }
