@@ -35,7 +35,10 @@ class OnBoardingViewModel @Inject constructor(
 
     fun saveUserInPreferences(id: String) = viewModelScope.launch {
         userManager.saveUserInPreferences(
-            _currentUser.value.copy(id = id)
+            _currentUser.value.copy(
+                name = _currentUser.value.name.trim(),
+                id = id
+            )
         )
     }
 

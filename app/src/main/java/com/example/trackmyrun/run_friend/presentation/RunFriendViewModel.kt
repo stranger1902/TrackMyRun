@@ -30,7 +30,7 @@ import javax.inject.Inject
 class RunFriendViewModel @Inject constructor(
     private val bluetoothController: BluetoothController,
     private val friendRepository: FriendRepository
-    ): ViewModel() {
+): ViewModel() {
 
     private val _state = MutableStateFlow(BluetoothStateModel())
 

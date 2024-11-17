@@ -83,7 +83,10 @@ fun MainScreen(
                 viewModel.bottomNavigationItems.forEachIndexed { index, item ->
                     NavigationBarItem(
                         selected = currentBottomNavigationItem == index,
-                        alwaysShowLabel = false,
+                        alwaysShowLabel = true,
+                        label = {
+                            Text(text = item.title)
+                        },
                         onClick = {
                             currentBottomNavigationItem = index
                             navController.navigate(item.route) {
