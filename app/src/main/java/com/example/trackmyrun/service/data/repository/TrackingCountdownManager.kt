@@ -1,5 +1,6 @@
 package com.example.trackmyrun.service.data.repository
 
+import com.example.trackmyrun.service.domain.repository.CountdownManager
 import com.example.trackmyrun.core.utils.Constants
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,19 +12,22 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Job
 
-class CountdownManager {
+class TrackingCountdownManager: CountdownManager {
 
     private val countdownScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     private val _countdown = MutableStateFlow(Constants.RUN_COUNTDOWN_INITIAL_VALUE)
-    val countdown = _countdown.asStateFlow()
-
     private val _isRunning = MutableStateFlow(false)
-    val isRunning = _isRunning.asStateFlow()
+
+    override val countdown
+        get() = _countdown.asStateFlow()
+
+    override val isRunning
+        get() = _isRunning.asStateFlow()
 
     private var timerJob: Job? = null
 
-    fun startCountdown(initialValue: Int, onCountdownEnd: () -> Unit) {
+    override fun startCountdown(initialValue: Int, onCountdownEnd: () -> Unit) {
 
         if (initialValue <= 0) throw RuntimeException("Start countdown value must be grater than 1s")
 
@@ -49,14 +53,14 @@ class CountdownManager {
         }
     }
 
-    fun resetCountdown() {
+    override fun resetCountdown() {
         _countdown.value = Constants.RUN_COUNTDOWN_INITIAL_VALUE
         _isRunning.value = false
         timerJob?.cancel()
         timerJob = null
     }
 
-    fun skipCountdown(onSkipCountdown: () -> Unit) {
+    override fun skipCountdown(onSkipCountdown: () -> Unit) {
         onSkipCountdown().also {
             _isRunning.value = false
             _countdown.value = 0

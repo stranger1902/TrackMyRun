@@ -1,5 +1,6 @@
 package com.example.trackmyrun.service.data.repository
 
+import com.example.trackmyrun.service.domain.repository.TimerManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.CoroutineScope
@@ -10,16 +11,18 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Job
 
-class TimerManager {
+class TrackingTimerManager: TimerManager {
 
     private val timerScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     private val _timeElapsedMillis = MutableStateFlow(0L)
-    val timeElapsedMillis = _timeElapsedMillis.asStateFlow()
+
+    override val timeElapsedMillis
+        get() = _timeElapsedMillis.asStateFlow()
 
     private var timerJob: Job? = null
 
-    fun startTimer() {
+    override fun startTimer() {
         timerJob = timerScope.launch {
             while (isActive) {
                 delay(1000)
@@ -28,12 +31,12 @@ class TimerManager {
         }
     }
 
-    fun pauseTimer() {
+    override fun pauseTimer() {
         timerJob?.cancel()
         timerJob = null
     }
 
-    fun stopTimer() {
+    override fun stopTimer() {
         _timeElapsedMillis.value = 0
         timerJob?.cancel()
         timerJob = null
