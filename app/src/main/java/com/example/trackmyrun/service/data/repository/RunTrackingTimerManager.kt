@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Job
 
-class TrackingTimerManager: TimerManager {
+class RunTrackingTimerManager: TimerManager {
 
     private val timerScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 

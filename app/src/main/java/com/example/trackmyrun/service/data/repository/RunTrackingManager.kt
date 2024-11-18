@@ -19,17 +19,17 @@ import javax.inject.Inject
 import kotlin.math.pow
 
 class RunTrackingManager @Inject constructor(
+    private val runTrackingTimerManager: TimerManager,
     @ApplicationContext private val context: Context,
-    private val gpsLocationManager: GpsManager,
-    private val timerManager: TimerManager,
+    private val runTrackingGpsManager: GpsManager,
     private val userManager: UserManager
 ) {
 
     private val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
     // flows launched in RunTrackingService scope...
-    val currentGpsLocation = gpsLocationManager.currentGpsLocation
-    val timeElapsedMillis = timerManager.timeElapsedMillis
+    val currentGpsLocation = runTrackingGpsManager.currentGpsLocation
+    val timeElapsedMillis = runTrackingTimerManager.timeElapsedMillis
 
     private val _runTrackingState = MutableStateFlow(CurrentRunState())
     val runTrackingState = _runTrackingState.asStateFlow()
@@ -72,7 +72,7 @@ class RunTrackingManager @Inject constructor(
                 pathPointList = _runTrackingState.value.pathPointList.toMutableList().apply { add(mutableListOf()) },
                 isTracking = true
             ).also {
-                timerManager.startTimer()
+                runTrackingTimerManager.startTimer()
             }
         else
             _runTrackingState.value = _runTrackingState.value.copy(
@@ -85,13 +85,13 @@ class RunTrackingManager @Inject constructor(
             lastPathPoint = null,
             isTracking = false
         ).also {
-            timerManager.pauseTimer()
+            runTrackingTimerManager.pauseTimer()
         }
     }
 
     fun stopTracking() {
         _runTrackingState.value = CurrentRunState()
-        timerManager.stopTimer()
+        runTrackingTimerManager.stopTimer()
     }
 
     fun unRegisterLocationReceiver() {

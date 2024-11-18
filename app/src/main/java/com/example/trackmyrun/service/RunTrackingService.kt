@@ -25,7 +25,7 @@ class RunTrackingService: Service() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     @Inject
-    lateinit var notificationManager: ServiceNotificationManager
+    lateinit var serviceNotificationManager: ServiceNotificationManager
 
     @Inject
     lateinit var runTrackingManager: RunTrackingManager
@@ -63,7 +63,7 @@ class RunTrackingService: Service() {
     private fun startTracking() {
 
         if (!isLaunched) {
-            startForeground(ServiceNotificationManager.RUN_TRACKING_NOTIFICATION_ID, notificationManager.baseNotification.build())
+            startForeground(ServiceNotificationManager.RUN_TRACKING_NOTIFICATION_ID, serviceNotificationManager.baseNotification.build())
             isLaunched = true
         }
 
@@ -92,7 +92,7 @@ class RunTrackingService: Service() {
                     return@onEach
                 }
 
-                notificationManager.updateServiceTrackingNotification(true, it.timeElapsedMillis)
+                serviceNotificationManager.updateServiceTrackingNotification(true, it.timeElapsedMillis)
 
                 runTrackingManager.updateRunTrackingState(
                     timeElapsedMillis = it.timeElapsedMillis,
@@ -104,7 +104,7 @@ class RunTrackingService: Service() {
     }
 
     private fun pauseTracking() {
-        notificationManager.updateServiceTrackingNotification(false, null)
+        serviceNotificationManager.updateServiceTrackingNotification(false, null)
         runTrackingManager.pauseTracking()
         runTrackingJob?.cancel()
         runTrackingJob = null
@@ -112,7 +112,7 @@ class RunTrackingService: Service() {
 
     private fun stopTracking() {
 
-        notificationManager.updateServiceTrackingNotification(false, null)
+        serviceNotificationManager.updateServiceTrackingNotification(false, null)
         runTrackingManager.stopTracking()
         runTrackingJob?.cancel()
 

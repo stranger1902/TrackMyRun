@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Job
 
-class TrackingCountdownManager: CountdownManager {
+class RunTrackingCountdownManager: CountdownManager {
 
     private val countdownScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
