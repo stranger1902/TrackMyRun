@@ -1,5 +1,7 @@
 package com.example.trackmyrun.service.data.repository
 
+import com.example.trackmyrun.service.domain.repository.TimerManager
+import com.example.trackmyrun.service.domain.repository.GpsManager
 import com.example.trackmyrun.run_new.presentation.CurrentRunState
 import com.example.trackmyrun.core.domain.model.PathPointModel
 import com.example.trackmyrun.service.LocationStateReceiver
@@ -17,8 +19,8 @@ import javax.inject.Inject
 import kotlin.math.pow
 
 class RunTrackingManager @Inject constructor(
-    private val gpsLocationManager: GpsLocationManager,
     @ApplicationContext private val context: Context,
+    private val gpsLocationManager: GpsManager,
     private val timerManager: TimerManager,
     private val userManager: UserManager
 ) {
