@@ -45,8 +45,8 @@ object ServiceModule {
         userManager: UserManager
     ): RunTrackingManager {
         return RunTrackingManager(
-            gpsLocationManager = gpsLocationManager,
-            timerManager = timerManager,
+            runTrackingGpsManager = gpsLocationManager,
+            runTrackingTimerManager = timerManager,
             userManager = userManager,
             context = context
         )
