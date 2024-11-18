@@ -88,10 +88,11 @@ class MainActivity: ComponentActivity() {
             }
 
             ObserveAsEvents(bluetoothController.isBluetoothEnabled) { isEnabled ->
-                if (!isEnabled)
-                    Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE).also {
-                        enableBluetoothLauncher.launch(it)
-                    }
+                if (permissionManager.checkBluetoothPermission())
+                    if (!isEnabled)
+                        Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE).also {
+                            enableBluetoothLauncher.launch(it)
+                        }
             }
 
             LaunchedEffect(Unit) {
