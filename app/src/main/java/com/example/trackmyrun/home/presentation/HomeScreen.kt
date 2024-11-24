@@ -108,6 +108,7 @@ fun HomeScreen(
                 )
             }
 
+            // TODO: passing lazyListState increases a lot recomposition.. why??? investigate it...
             PullToRefreshLazyColumn(
                 lazyListState = lazyListState,
                 isRefreshing = isRefreshing,
