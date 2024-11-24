@@ -5,11 +5,11 @@ import com.example.trackmyrun.run_new.presentation.component.NewRunController
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.trackmyrun.core.domain.mapper.toLatLng
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.navigationBars
 import com.example.trackmyrun.core.domain.model.RunModel
-import com.example.trackmyrun.core.domain.model.toLatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.CameraPosition
 import androidx.compose.foundation.layout.WindowInsets

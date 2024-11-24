@@ -5,7 +5,7 @@ import com.example.trackmyrun.service.domain.repository.GpsManager
 import com.example.trackmyrun.run_new.presentation.CurrentRunState
 import com.example.trackmyrun.core.domain.model.PathPointModel
 import com.example.trackmyrun.service.LocationStateReceiver
-import com.example.trackmyrun.core.domain.model.toLatLng
+import com.example.trackmyrun.core.domain.mapper.toLatLng
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.example.trackmyrun.core.utils.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow

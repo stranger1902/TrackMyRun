@@ -4,8 +4,8 @@ import com.example.trackmyrun.profile.domain.repository.FriendRepository
 import com.example.trackmyrun.core.data.local.database.dao.FriendDao
 import com.example.trackmyrun.core.domain.model.ResourceModel
 import com.example.trackmyrun.core.domain.model.FriendModel
-import com.example.trackmyrun.core.domain.model.toEntity
-import com.example.trackmyrun.core.domain.model.toModel
+import com.example.trackmyrun.core.data.mapper.toEntity
+import com.example.trackmyrun.core.data.mapper.toModel
 import javax.inject.Inject
 
 class FriendRepositoryImpl @Inject constructor(
