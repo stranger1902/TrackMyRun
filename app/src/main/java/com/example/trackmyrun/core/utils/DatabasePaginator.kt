@@ -1,15 +1,14 @@
 package com.example.trackmyrun.core.utils
 
-import com.example.trackmyrun.core.data.local.model.ResponsePagingModel
-import com.example.trackmyrun.core.data.local.model.ResponseErrorModel
+import com.example.trackmyrun.core.domain.model.ResourceModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class DatabasePaginator<Key, Item>(
-    private inline val onRequest: suspend (nextKey: Key) -> ResponsePagingModel<Item>,
+    private inline val onRequest: suspend (nextKey: Key) -> ResourceModel<List<Item>>,
     private inline val onSuccess: suspend (newItems: List<Item>, newKey: Key) -> Unit,
     private inline val onNextKey: (newItems: List<Item>, oldKey: Key) -> Key,
-    private inline val onError: suspend (e: ResponseErrorModel) -> Unit,
+    private inline val onError: suspend (e: String) -> Unit,
     private inline val onEndReached: (Boolean) -> Unit,
     private inline val isLoading: (Boolean) -> Unit,
     private val initialKey: Key

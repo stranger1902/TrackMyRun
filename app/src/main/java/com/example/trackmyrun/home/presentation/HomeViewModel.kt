@@ -1,6 +1,5 @@
 package com.example.trackmyrun.home.presentation
 
-import com.example.trackmyrun.core.data.local.model.ResponseErrorModel
 import com.example.trackmyrun.home.domain.repository.RunRepository
 import com.example.trackmyrun.core.utils.DatabasePaginator
 import com.example.trackmyrun.core.utils.FileImageManager
@@ -30,7 +29,7 @@ class HomeViewModel @Inject constructor(
     private val _state = MutableStateFlow(HomeState(pageSize = 10))
     val state = _state.asStateFlow()
 
-    private val errorChannel = Channel<ResponseErrorModel>()
+    private val errorChannel = Channel<String>()
 
     private val paginator = DatabasePaginator<Long, RunModel>(
         onRequest = { nextPage ->
