@@ -73,7 +73,7 @@ fun CountdownIndicator(
 
         Canvas(
             modifier = Modifier
-                .size(size.coerceAtLeast(250.dp))
+                .size(size.coerceAtLeast(240.dp))
         ) {
 
             val arcContainerSize = this.size * 0.8f
@@ -121,7 +121,7 @@ fun CountDownIndicatorPreview() {
         CountdownIndicator(
             maxIndicatorValue = 100,
             countdown = 40,
-            size = 250.dp,
+            size = 240.dp,
             onSkipTimerClick = { }
         )
     }

@@ -33,6 +33,7 @@ class UserManager(
                     height = it[Constants.HEIGHT_USER_DATASTORE_KEY] ?: 0,
                     weight = it[Constants.WEIGHT_USER_DATASTORE_KEY] ?: 0,
                     name = it[Constants.NAME_USER_DATASTORE_KEY] ?: "",
+                    id = it[Constants.ID_USER_DATASTORE_KEY]
                 )
             }
         }
@@ -43,6 +44,7 @@ class UserManager(
             preferences[Constants.NAME_USER_DATASTORE_KEY] = user.name.toLowerCase(Locale.current).capitalize(Locale.current)
             preferences[Constants.HEIGHT_USER_DATASTORE_KEY] = user.height
             preferences[Constants.WEIGHT_USER_DATASTORE_KEY] = user.weight
+            preferences[Constants.ID_USER_DATASTORE_KEY] = user.id!!
         }
     }
 

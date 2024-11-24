@@ -2,7 +2,7 @@ package com.example.trackmyrun.run_statistics.di
 
 import com.example.trackmyrun.run_statistics.data.repository.RunStatisticsRepositoryImpl
 import com.example.trackmyrun.run_statistics.domain.repository.RunStatisticsRepository
-import com.example.trackmyrun.core.data.database.dao.StatisticsDao
+import com.example.trackmyrun.core.data.local.database.dao.StatisticsDao
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import dagger.hilt.InstallIn

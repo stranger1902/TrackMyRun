@@ -1,11 +1,16 @@
 package com.example.trackmyrun.run_statistics.presentation
 
+import com.example.trackmyrun.run_statistics.presentation.component.LineGraph
 import com.example.trackmyrun.core.extensions.toStopwatchUserFormat
 import com.example.trackmyrun.core.domain.model.RunStatisticsModel
+import com.example.trackmyrun.core.domain.model.RunKcalBurnedModel
+import com.example.trackmyrun.core.extensions.toLabelDateFormat
 import com.example.trackmyrun.core.extensions.shimmerEffect
 import com.example.trackmyrun.core.extensions.conditional
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.icons.filled.Warning
 import com.example.trackmyrun.core.extensions.msToKmH
 import androidx.compose.foundation.layout.Arrangement
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -15,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.size
@@ -22,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.painterResource
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.getValue
@@ -33,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import com.example.trackmyrun.R
 
 @Composable
@@ -42,12 +50,23 @@ fun StatisticsScreen(
 
     val viewModel = hiltViewModel<RunStatisticsViewModel>()
 
+    var runsKcalBurned: List<RunKcalBurnedModel>? by remember {
+        mutableStateOf(null)
+    }
+
     var runStatistics: RunStatisticsModel? by remember {
         mutableStateOf(null)
     }
 
+    val coroutineScope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
-        runStatistics = viewModel.getStatistics().await()
+        coroutineScope.launch {
+            runsKcalBurned = viewModel.getRunsKcalburned().await()
+        }
+        coroutineScope.launch {
+            runStatistics = viewModel.getStatistics().await()
+        }
     }
 
     Column (
@@ -55,6 +74,7 @@ fun StatisticsScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
             .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp)
     ) {
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -250,5 +270,43 @@ fun StatisticsScreen(
                     .padding(8.dp)
             )
         }
+
+        if ((runsKcalBurned?.size ?: 0) >= 2)
+            LineGraph(
+                labelsAxisX = runsKcalBurned!!.map { it.startTimestamp.toLabelDateFormat() },
+                data = runsKcalBurned!!.map { it.kcalBurned },
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+            )
+        else
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+
+                Icon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = "warning",
+                    modifier = Modifier
+                        .size(32.dp)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = "Inserisci almeno 2 corse per mostrare il grafico sull'andamento del consumo delle calorie",
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
+            }
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }

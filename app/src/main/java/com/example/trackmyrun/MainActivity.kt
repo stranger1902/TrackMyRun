@@ -1,13 +1,17 @@
 package com.example.trackmyrun
 
+import com.example.trackmyrun.core.bluetooth.domain.interfaces.BluetoothController
 import com.example.trackmyrun.on_boarding.navigation.registerOnBoardingGraph
-import com.example.trackmyrun.bluetooth.domain.chat.BluetoothController
 import com.example.trackmyrun.on_boarding.navigation.OnBoardingGraph
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import com.example.trackmyrun.core.presentation.ObserveAsEvents
 import com.example.trackmyrun.main.navigation.registerMainGraph
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.trackmyrun.core.utils.PermissionManager
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.trackmyrun.core.theme.TrackMyRunTheme
+import com.example.trackmyrun.service.RunTrackingService
 import androidx.navigation.compose.rememberNavController
 import com.example.trackmyrun.main.navigation.MainGraph
 import androidx.compose.runtime.rememberCoroutineScope
@@ -23,6 +27,7 @@ import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import android.bluetooth.BluetoothAdapter
 import androidx.compose.material3.Button
 import androidx.compose.runtime.getValue
 import androidx.datastore.core.DataStore
@@ -52,21 +57,43 @@ class MainActivity: ComponentActivity() {
 
         enableEdgeToEdge()
 
-        bluetoothController.registerReceiver()
+        Intent(applicationContext, RunTrackingService::class.java).apply {
+            action = RunTrackingService.REGISTER_GPS_LISTENER
+            applicationContext.startService(this)
+        }
 
-//        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-//
-//        if (!bluetoothManager.adapter.isEnabled) {
-//            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-//                /* We don't need to elaborate the result... */
-//            }.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
-//        }
+        bluetoothController.registerBluetoothReceivers()
 
         setContent {
 
             val permissionGranted by permissionManager.permissionGranted.collectAsStateWithLifecycle()
 
             val coroutineScope = rememberCoroutineScope()
+
+            val makeDiscoverableLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                // TODO: ???segnalare la risposta dell'utente???
+            }
+
+            val enableBluetoothLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                /* We don't need to elaborate the result... */
+            }
+
+            ObserveAsEvents(bluetoothController.makeDiscoverable) { makeDiscoverable ->
+                if (makeDiscoverable)
+                    Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
+                        putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, Constants.BLUETOOTH_DISCOVERABLE_INTERVAL_SEC)
+                    }.also {
+                        makeDiscoverableLauncher.launch(it)
+                    }
+            }
+
+            ObserveAsEvents(bluetoothController.isBluetoothEnabled) { isEnabled ->
+                if (permissionManager.checkBluetoothPermission())
+                    if (!isEnabled)
+                        Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE).also {
+                            enableBluetoothLauncher.launch(it)
+                        }
+            }
 
             LaunchedEffect(Unit) {
                 coroutineScope.launch {
@@ -91,10 +118,8 @@ class MainActivity: ComponentActivity() {
                         confirmButton = {
                             Button(
                                 onClick = {
-                                    Intent(
-                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                        Uri.fromParts("package", packageName, null)
-                                    ).also { startActivity(it) }
+                                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null))
+                                        .also { startActivity(it) }
                                 }
                             ) { Text(text = "Apri impostazioni") }
                         },
@@ -127,9 +152,15 @@ class MainActivity: ComponentActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy().also {
-            bluetoothController.release()
+
+        super.onDestroy()
+
+        Intent(applicationContext, RunTrackingService::class.java).apply {
+            action = RunTrackingService.UNREGISTER_GPS_LISTENER
+            applicationContext.startService(this)
         }
+
+        bluetoothController.release()
     }
 
 }

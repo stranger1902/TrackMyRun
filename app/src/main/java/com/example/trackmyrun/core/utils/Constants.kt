@@ -11,11 +11,13 @@ class Constants {
         val HEIGHT_USER_DATASTORE_KEY = intPreferencesKey("height")
         val WEIGHT_USER_DATASTORE_KEY = intPreferencesKey("weight")
         val NAME_USER_DATASTORE_KEY = stringPreferencesKey("name")
+        val ID_USER_DATASTORE_KEY = stringPreferencesKey("id")
 
         const val RUN_TRACKING_DB_NAME = "run_tracking.db"
         const val USER_DATASTORE_KEY = "user"
         const val IMAGE_FILE_PATH = "image"
 
+        const val BLUETOOTH_DISCOVERABLE_INTERVAL_SEC = 120L
         const val GPS_FASTEST_INTERVAL_MILLIS = 1000L
         const val GPS_INTERVAL_MILLIS = 3000L
 

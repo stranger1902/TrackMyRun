@@ -5,11 +5,14 @@ import com.example.trackmyrun.run_new.presentation.component.NewRunController
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.trackmyrun.core.domain.mapper.toLatLng
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.layout.navigationBars
 import com.example.trackmyrun.core.domain.model.RunModel
-import com.example.trackmyrun.core.domain.model.toLatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.CameraPosition
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import com.google.android.gms.maps.CameraUpdateFactory
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -20,8 +23,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.example.trackmyrun.core.utils.Constants
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.offset
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapEffect
 import androidx.compose.ui.platform.LocalContext
@@ -34,17 +37,22 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.AlertDialog
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.window.Dialog
+import androidx.compose.material3.Button
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.material3.Text
 import kotlin.uuid.ExperimentalUuidApi
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import android.provider.Settings
 import com.example.trackmyrun.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.async
+import android.content.Intent
 import android.widget.Toast
 import kotlin.uuid.Uuid
 
@@ -61,6 +69,7 @@ fun NewRunScreen(
         val viewModel = hiltViewModel<NewRunViewModel>()
 
         val countdownIsRunning by viewModel.countdownIsRunning.collectAsStateWithLifecycle()
+        val isGpsEnabled by viewModel.isGpsEnabled.collectAsStateWithLifecycle()
         val countdown by viewModel.countdown.collectAsStateWithLifecycle()
         val currentRun by viewModel.state.collectAsStateWithLifecycle()
 
@@ -71,6 +80,10 @@ fun NewRunScreen(
         val isDarkMode = isSystemInDarkTheme()
 
         val context = LocalContext.current
+
+        var isMyLocationEnabled by rememberSaveable {
+            mutableStateOf(true)
+        }
 
         var takeSnapshot by rememberSaveable {
             mutableStateOf(false)
@@ -96,11 +109,11 @@ fun NewRunScreen(
             )
         }
 
-        val properties by remember {
+        val properties by remember(isMyLocationEnabled) {
             mutableStateOf(
                 MapProperties(
+                    isMyLocationEnabled = isMyLocationEnabled,
                     mapStyleOptions = mapsStyle,
-                    isMyLocationEnabled = true,
                     mapType = MapType.NORMAL
                 )
             )
@@ -115,6 +128,24 @@ fun NewRunScreen(
                 )
             }
         }
+
+        if (!isGpsEnabled)
+            AlertDialog(
+                text = {
+                    Text(text = "Hai bisogno del GPS abilitato per poter tracciare il tuo percorso")
+                },
+                title = {
+                    Text(text = "GPS disabilitato")
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                        }
+                    ) { Text(text = "Apri impostazioni") }
+                },
+                onDismissRequest = { }
+            )
 
         // disable back-press button while new run is saving..
         BackHandler(
@@ -135,6 +166,13 @@ fun NewRunScreen(
             MapEffect(takeSnapshot) { map ->
 
                 if (takeSnapshot) {
+
+                    if (currentRun.pathPointList.firstOrNull()?.isEmpty() == true) {
+                        viewModel.stopRunning()
+                        return@MapEffect
+                    }
+
+                    isMyLocationEnabled = false
 
                     LatLngBounds.Builder().apply {
                         currentRun.pathPointList.flatMap { pathPoint ->
@@ -189,20 +227,24 @@ fun NewRunScreen(
         }
 
         if (countdownIsRunning)
-            AlertDialog(
-                onDismissRequest = { },
-                confirmButton = { },
-                text = {
-                    CountdownIndicator(
-                        maxIndicatorValue = Constants.RUN_COUNTDOWN_INITIAL_VALUE,
-                        countdown = countdown,
-                        onSkipTimerClick = {
-                            viewModel.skipCountdown()
-                        },
-                        size = 250.dp
-                    )
+            Dialog(
+                properties = DialogProperties(
+                    dismissOnClickOutside = false,
+                    dismissOnBackPress = true
+                ),
+                onDismissRequest = {
+                    viewModel.skipCountdown()
                 }
-            )
+            ) {
+                CountdownIndicator(
+                    maxIndicatorValue = Constants.RUN_COUNTDOWN_INITIAL_VALUE,
+                    countdown = countdown,
+                    size = 240.dp,
+                    onSkipTimerClick = {
+                        viewModel.skipCountdown()
+                    }
+                )
+            }
 
         if (!takeSnapshot)
             NewRunController(
@@ -225,8 +267,8 @@ fun NewRunScreen(
                     }
                 },
                 modifier = Modifier
+                    .padding(WindowInsets.navigationBars.asPaddingValues())
                     .align(Alignment.BottomCenter)
-                    .offset(y = (-32).dp)
                     .padding(16.dp)
                     .fillMaxWidth()
             )

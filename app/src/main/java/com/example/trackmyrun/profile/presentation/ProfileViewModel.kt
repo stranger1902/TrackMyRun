@@ -1,7 +1,6 @@
 package com.example.trackmyrun.profile.presentation
 
 import com.example.trackmyrun.profile.domain.repository.FriendRepository
-import com.example.trackmyrun.core.data.local.model.ResponseErrorModel
 import com.example.trackmyrun.core.domain.model.FriendModel
 import com.example.trackmyrun.core.utils.DatabasePaginator
 import com.example.trackmyrun.core.utils.UserManager
@@ -26,7 +25,7 @@ class ProfileViewModel @Inject constructor(
     private val _state = MutableStateFlow(ProfileState(pageSize = 10))
     val state = _state.asStateFlow()
 
-    private val errorChannel = Channel<ResponseErrorModel>()
+    private val errorChannel = Channel<String>()
 
     private val paginator = DatabasePaginator<Long, FriendModel>(
         onRequest = { nextPage ->

@@ -1,27 +1,46 @@
 package com.example.trackmyrun.service.data.repository
 
+import com.example.trackmyrun.service.domain.repository.TimerManager
+import com.example.trackmyrun.service.domain.repository.GpsManager
 import com.example.trackmyrun.run_new.presentation.CurrentRunState
 import com.example.trackmyrun.core.domain.model.PathPointModel
-import com.example.trackmyrun.core.domain.model.toLatLng
+import com.example.trackmyrun.service.LocationStateReceiver
+import com.example.trackmyrun.core.domain.mapper.toLatLng
+import dagger.hilt.android.qualifiers.ApplicationContext
 import com.example.trackmyrun.core.utils.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import com.google.maps.android.SphericalUtil
 import kotlinx.coroutines.flow.asStateFlow
+import android.location.LocationManager
+import kotlinx.coroutines.flow.update
+import android.content.IntentFilter
+import android.content.Context
 import javax.inject.Inject
 import kotlin.math.pow
 
 class RunTrackingManager @Inject constructor(
-    private val gpsLocationManager: GpsLocationManager,
-    private val timerManager: TimerManager,
+    private val runTrackingTimerManager: TimerManager,
+    @ApplicationContext private val context: Context,
+    private val runTrackingGpsManager: GpsManager,
     private val userManager: UserManager
 ) {
 
+    private val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
     // flows launched in RunTrackingService scope...
-    val currentGpsLocation = gpsLocationManager.currentGpsLocation
-    val timeElapsedMillis = timerManager.timeElapsedMillis
+    val currentGpsLocation = runTrackingGpsManager.currentGpsLocation
+    val timeElapsedMillis = runTrackingTimerManager.timeElapsedMillis
 
     private val _runTrackingState = MutableStateFlow(CurrentRunState())
     val runTrackingState = _runTrackingState.asStateFlow()
+
+    // flow launched in RunTrackingService scope...
+    private val _isGpsEnabled = MutableStateFlow(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+    val isGpsEnabled = _isGpsEnabled.asStateFlow()
+
+    private val locationStateReceiver = LocationStateReceiver { isGpsEnabled ->
+        _isGpsEnabled.update { isGpsEnabled }
+    }
 
     fun updateRunTrackingState(pathPoint: PathPointModel, speedMs: Float, timeElapsedMillis: Long) {
 
@@ -48,12 +67,17 @@ class RunTrackingManager @Inject constructor(
     }
 
     fun startTracking() {
-        _runTrackingState.value = _runTrackingState.value.copy(
-            pathPointList = _runTrackingState.value.pathPointList.toMutableList().apply { add(mutableListOf()) },
-            isTracking = true
-        ).also {
-            timerManager.startTimer()
-        }
+        if (isGpsEnabled.value)
+            _runTrackingState.value = _runTrackingState.value.copy(
+                pathPointList = _runTrackingState.value.pathPointList.toMutableList().apply { add(mutableListOf()) },
+                isTracking = true
+            ).also {
+                runTrackingTimerManager.startTimer()
+            }
+        else
+            _runTrackingState.value = _runTrackingState.value.copy(
+                isTracking = false
+            )
     }
 
     fun pauseTracking() {
@@ -61,13 +85,21 @@ class RunTrackingManager @Inject constructor(
             lastPathPoint = null,
             isTracking = false
         ).also {
-            timerManager.pauseTimer()
+            runTrackingTimerManager.pauseTimer()
         }
     }
 
     fun stopTracking() {
         _runTrackingState.value = CurrentRunState()
-        timerManager.stopTimer()
+        runTrackingTimerManager.stopTimer()
+    }
+
+    fun unRegisterLocationReceiver() {
+        context.unregisterReceiver(locationStateReceiver)
+    }
+
+    fun registerLocationReceiver() {
+        context.registerReceiver(locationStateReceiver, IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION))
     }
 
 }

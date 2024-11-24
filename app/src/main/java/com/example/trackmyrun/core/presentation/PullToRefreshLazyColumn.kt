@@ -6,6 +6,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import com.example.trackmyrun.core.domain.interfaces.IKey
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyListState
@@ -19,7 +20,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <Item> PullToRefreshLazyColumn(
+fun <Key: Any, Item: IKey<Key>> PullToRefreshLazyColumn(
     modifier: Modifier = Modifier,
     pullToRefreshState: PullToRefreshState = rememberPullToRefreshState(),
     lazyListState: LazyListState = rememberLazyListState(),
@@ -50,7 +51,10 @@ fun <Item> PullToRefreshLazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                items(items) { item ->
+                items(
+                    key = { it.id },
+                    items = items
+                ) { item ->
                     itemContent(item)
                 }
             }

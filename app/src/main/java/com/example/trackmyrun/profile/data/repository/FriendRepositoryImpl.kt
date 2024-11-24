@@ -1,32 +1,38 @@
 package com.example.trackmyrun.profile.data.repository
 
 import com.example.trackmyrun.profile.domain.repository.FriendRepository
-import com.example.trackmyrun.core.data.local.model.ResponsePagingModel
-import com.example.trackmyrun.core.data.local.model.ResponseErrorModel
-import com.example.trackmyrun.core.data.database.dao.FriendDao
+import com.example.trackmyrun.core.data.local.database.dao.FriendDao
+import com.example.trackmyrun.core.domain.model.ResourceModel
 import com.example.trackmyrun.core.domain.model.FriendModel
-import com.example.trackmyrun.core.domain.model.toModel
+import com.example.trackmyrun.core.data.mapper.toEntity
+import com.example.trackmyrun.core.data.mapper.toModel
 import javax.inject.Inject
 
 class FriendRepositoryImpl @Inject constructor(
     private val friendDao: FriendDao
 ): FriendRepository {
 
-    override suspend fun getFriends(limit: Int, offset: Long?): ResponsePagingModel<FriendModel> {
+    override suspend fun getFriends(limit: Int, offset: Long?): ResourceModel<List<FriendModel>> {
         return try {
-            ResponsePagingModel(
-                data = friendDao.getFriends(limit, offset).map { it.toModel() },
-                error = null
+            ResourceModel.Success(
+                data = friendDao.getFriends(limit, offset).map { it.toModel() }
             )
         } catch (e: Exception) {
             e.printStackTrace()
-            ResponsePagingModel(
-                data = emptyList(),
-                error = ResponseErrorModel(
-                    message = "Non è stato possibile recuperare gli amici",
-                    errorCode = null
-                )
+            ResourceModel.Error(
+                error = "Non è stato possibile recuperare gli amici",
+                data = emptyList()
             )
+        }
+    }
+
+    override suspend fun insertFriend(friend: FriendModel): Boolean {
+        try {
+            friendDao.insertFriend(friend.toEntity())
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
         }
     }
 

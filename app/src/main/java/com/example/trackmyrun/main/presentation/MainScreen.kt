@@ -11,14 +11,12 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.foundation.layout.height
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavHostController
 import androidx.compose.material3.TopAppBar
 import androidx.navigation.compose.NavHost
 import androidx.compose.material3.Scaffold
@@ -38,7 +36,8 @@ import com.example.trackmyrun.R
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    mainGraphNavController: NavHostController
+    onNewFriendClick: () -> Unit,
+    onNewRunClick: () -> Unit
 ) {
 
     val viewModel = hiltViewModel<MainViewModel>()
@@ -80,14 +79,14 @@ fun MainScreen(
             )
         },
         bottomBar = {
-            BottomAppBar(
-                modifier = Modifier
-                    .height(80.dp)
-            ) {
+            BottomAppBar {
                 viewModel.bottomNavigationItems.forEachIndexed { index, item ->
                     NavigationBarItem(
                         selected = currentBottomNavigationItem == index,
-                        alwaysShowLabel = false,
+                        alwaysShowLabel = true,
+                        label = {
+                            Text(text = item.title)
+                        },
                         onClick = {
                             currentBottomNavigationItem = index
                             navController.navigate(item.route) {
@@ -116,10 +115,10 @@ fun MainScreen(
             startDestination = BottomNavigationGraph,
             navController = navController,
             modifier = Modifier
-                .padding(innerPadding)
                 .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            registerBottomNavigationGraph(mainGraphNavController)
+            registerBottomNavigationGraph(onNewFriendClick, onNewRunClick)
         }
     }
 

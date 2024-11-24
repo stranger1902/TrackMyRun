@@ -25,11 +25,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.material3.Button
 import androidx.compose.runtime.getValue
 import androidx.compose.material3.Text
+import kotlin.uuid.ExperimentalUuidApi
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import android.widget.Toast
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun OnBoardingScreen(
     modifier: Modifier = Modifier,
@@ -137,6 +140,7 @@ fun OnBoardingScreen(
                         when(currentPage) {
 
                             viewModel.onBoardingPageData.size - 1 -> {
+                                viewModel.saveUserInPreferences(Uuid.random().toHexString())
                                 onBoardingCompleted()
                             }
 
@@ -144,7 +148,6 @@ fun OnBoardingScreen(
                                 if (!viewModel.checkUser())
                                     Toast.makeText(context, "Compila tutti i campi", Toast.LENGTH_SHORT).show()
                                 else {
-                                    viewModel.saveUserInPreferences()
                                     viewModel.navigateNextPage()
                                 }
                             }

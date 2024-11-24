@@ -33,8 +33,13 @@ class OnBoardingViewModel @Inject constructor(
         if (_currentPage.value > 0) _currentPage.value -= 1
     }
 
-    fun saveUserInPreferences() = viewModelScope.launch {
-        userManager.saveUserInPreferences(_currentUser.value)
+    fun saveUserInPreferences(id: String) = viewModelScope.launch {
+        userManager.saveUserInPreferences(
+            _currentUser.value.copy(
+                name = _currentUser.value.name.trim(),
+                id = id
+            )
+        )
     }
 
     fun checkUser(): Boolean = _currentUser.value.name != "" && _currentUser.value.weight != 0 && _currentUser.value.height != 0

@@ -1,11 +1,10 @@
 package com.example.trackmyrun.run_new.presentation
 
+import com.example.trackmyrun.service.domain.repository.CountdownManager
 import com.example.trackmyrun.service.data.repository.RunTrackingManager
-import com.example.trackmyrun.service.data.repository.CountdownManager
-import com.example.trackmyrun.core.data.database.dao.RunDao
+import com.example.trackmyrun.home.domain.repository.RunRepository
 import com.example.trackmyrun.core.utils.FileImageManager
 import com.example.trackmyrun.core.domain.model.RunModel
-import com.example.trackmyrun.core.domain.model.toEntity
 import com.example.trackmyrun.service.RunTrackingService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.example.trackmyrun.core.utils.Constants
@@ -24,11 +23,13 @@ class NewRunViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val fileImageManager: FileImageManager,
     private val countdownManager: CountdownManager,
-    private val runDao: RunDao
+    private val runRepository: RunRepository
 ): ViewModel() {
 
     val countdownIsRunning = countdownManager.isRunning
     val countdown = countdownManager.countdown
+
+    val isGpsEnabled = runTrackingManager.isGpsEnabled
 
     val state = runTrackingManager.runTrackingState
 
@@ -77,7 +78,7 @@ class NewRunViewModel @Inject constructor(
 
     fun saveRun(run: RunModel) {
         viewModelScope.launch {
-            runDao.insertRun(run.toEntity())
+            runRepository.insertRun(run)
         }
     }
 

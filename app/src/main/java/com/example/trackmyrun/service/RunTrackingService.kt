@@ -25,7 +25,7 @@ class RunTrackingService: Service() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     @Inject
-    lateinit var notificationManager: ServiceNotificationManager
+    lateinit var serviceNotificationManager: ServiceNotificationManager
 
     @Inject
     lateinit var runTrackingManager: RunTrackingManager
@@ -34,6 +34,8 @@ class RunTrackingService: Service() {
     private var isLaunched = false
 
     companion object {
+        const val UNREGISTER_GPS_LISTENER = "UNREGISTER_GPS"
+        const val REGISTER_GPS_LISTENER = "REGISTER_GPS"
         const val START_RUN_TRACKING = "START_TRACKING"
         const val PAUSE_RUN_TRACKING = "PAUSE_TRACKING"
         const val STOP_RUN_TRACKING = "STOP_TRACKING"
@@ -48,6 +50,8 @@ class RunTrackingService: Service() {
         val action = intent?.action
 
         when(action) {
+            UNREGISTER_GPS_LISTENER -> runTrackingManager.unRegisterLocationReceiver()
+            REGISTER_GPS_LISTENER -> runTrackingManager.registerLocationReceiver()
             START_RUN_TRACKING -> startTracking()
             PAUSE_RUN_TRACKING -> pauseTracking()
             STOP_RUN_TRACKING -> stopTracking()
@@ -59,17 +63,19 @@ class RunTrackingService: Service() {
     private fun startTracking() {
 
         if (!isLaunched) {
-            startForeground(ServiceNotificationManager.RUN_TRACKING_NOTIFICATION_ID, notificationManager.baseNotification.build())
+            startForeground(ServiceNotificationManager.RUN_TRACKING_NOTIFICATION_ID, serviceNotificationManager.baseNotification.build())
             isLaunched = true
         }
 
         if (runTrackingJob == null)
             runTrackingJob = combine(
                 runTrackingManager.currentGpsLocation,
-                runTrackingManager.timeElapsedMillis
-            ) { gpsLocation, timeElapsedMillis ->
+                runTrackingManager.timeElapsedMillis,
+                runTrackingManager.isGpsEnabled
+            ) { gpsLocation, timeElapsedMillis, isGpsEnabled ->
                 TrackingInfoModel(
                     timeElapsedMillis = timeElapsedMillis,
+                    isGpsEnabled = isGpsEnabled,
                     gpsLocation = gpsLocation
                 )
             }
@@ -81,7 +87,12 @@ class RunTrackingService: Service() {
             }
             .onEach {
 
-                notificationManager.updateServiceTrackingNotification(true, it.timeElapsedMillis)
+                if (!it.isGpsEnabled) {
+                    pauseTracking()
+                    return@onEach
+                }
+
+                serviceNotificationManager.updateServiceTrackingNotification(true, it.timeElapsedMillis)
 
                 runTrackingManager.updateRunTrackingState(
                     timeElapsedMillis = it.timeElapsedMillis,
@@ -93,7 +104,7 @@ class RunTrackingService: Service() {
     }
 
     private fun pauseTracking() {
-        notificationManager.updateServiceTrackingNotification(false, null)
+        serviceNotificationManager.updateServiceTrackingNotification(false, null)
         runTrackingManager.pauseTracking()
         runTrackingJob?.cancel()
         runTrackingJob = null
@@ -101,7 +112,7 @@ class RunTrackingService: Service() {
 
     private fun stopTracking() {
 
-        notificationManager.updateServiceTrackingNotification(false, null)
+        serviceNotificationManager.updateServiceTrackingNotification(false, null)
         runTrackingManager.stopTracking()
         runTrackingJob?.cancel()
 

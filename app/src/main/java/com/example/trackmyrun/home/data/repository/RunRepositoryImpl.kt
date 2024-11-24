@@ -1,32 +1,27 @@
 package com.example.trackmyrun.home.data.repository
 
-import com.example.trackmyrun.core.data.local.model.ResponsePagingModel
-import com.example.trackmyrun.core.data.local.model.ResponseErrorModel
 import com.example.trackmyrun.home.domain.repository.RunRepository
-import com.example.trackmyrun.core.data.database.dao.RunDao
+import com.example.trackmyrun.core.data.local.database.dao.RunDao
+import com.example.trackmyrun.core.domain.model.ResourceModel
 import com.example.trackmyrun.core.domain.model.RunModel
-import com.example.trackmyrun.core.domain.model.toEntity
-import com.example.trackmyrun.core.domain.model.toModel
+import com.example.trackmyrun.core.data.mapper.toEntity
+import com.example.trackmyrun.core.data.mapper.toModel
 import javax.inject.Inject
 
 class RunRepositoryImpl @Inject constructor(
     private val runDao: RunDao
 ): RunRepository {
 
-    override suspend fun getRuns(limit: Int, offset: Long?): ResponsePagingModel<RunModel> {
+    override suspend fun getRuns(limit: Int, offset: Long?): ResourceModel<List<RunModel>> {
         return try {
-            ResponsePagingModel(
+            ResourceModel.Success(
                 data = runDao.getRuns(limit, offset).map { it.toModel() },
-                error = null
             )
         } catch (e: Exception) {
             e.printStackTrace()
-            ResponsePagingModel(
-                data = emptyList(),
-                error = ResponseErrorModel(
-                    message = "Non è stato possibile recuperare le corse",
-                    errorCode = null
-                )
+            ResourceModel.Error(
+                error = "Non è stato possibile recuperare le corse",
+                data = emptyList()
             )
         }
     }

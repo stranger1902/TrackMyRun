@@ -2,6 +2,7 @@ package com.example.trackmyrun.run_statistics.presentation
 
 import com.example.trackmyrun.run_statistics.domain.repository.RunStatisticsRepository
 import com.example.trackmyrun.core.domain.model.RunStatisticsModel
+import com.example.trackmyrun.core.domain.model.RunKcalBurnedModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.ViewModel
@@ -17,6 +18,12 @@ class RunStatisticsViewModel @Inject constructor(
     fun getStatistics(): Deferred<RunStatisticsModel?> {
         return viewModelScope.async {
             runStatisticsRepository.getStatistics()
+        }
+    }
+
+    fun getRunsKcalburned(): Deferred<List<RunKcalBurnedModel>> {
+        return viewModelScope.async {
+            runStatisticsRepository.getRunsKcalburned()
         }
     }
 
