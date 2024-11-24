@@ -3,7 +3,7 @@ package com.example.trackmyrun.profile.data.repository
 import com.example.trackmyrun.profile.domain.repository.FriendRepository
 import com.example.trackmyrun.core.data.local.model.ResponsePagingModel
 import com.example.trackmyrun.core.data.local.model.ResponseErrorModel
-import com.example.trackmyrun.core.data.database.dao.FriendDao
+import com.example.trackmyrun.core.data.local.database.dao.FriendDao
 import com.example.trackmyrun.core.domain.model.FriendModel
 import com.example.trackmyrun.core.domain.model.toEntity
 import com.example.trackmyrun.core.domain.model.toModel

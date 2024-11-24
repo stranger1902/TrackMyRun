@@ -3,7 +3,7 @@ package com.example.trackmyrun.home.data.repository
 import com.example.trackmyrun.core.data.local.model.ResponsePagingModel
 import com.example.trackmyrun.core.data.local.model.ResponseErrorModel
 import com.example.trackmyrun.home.domain.repository.RunRepository
-import com.example.trackmyrun.core.data.database.dao.RunDao
+import com.example.trackmyrun.core.data.local.database.dao.RunDao
 import com.example.trackmyrun.core.domain.model.RunModel
 import com.example.trackmyrun.core.domain.model.toEntity
 import com.example.trackmyrun.core.domain.model.toModel

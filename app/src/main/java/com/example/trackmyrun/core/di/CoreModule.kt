@@ -1,9 +1,9 @@
 package com.example.trackmyrun.core.di
 
-import com.example.trackmyrun.core.data.database.RunTrackingDatabase
-import com.example.trackmyrun.core.data.database.dao.StatisticsDao
-import com.example.trackmyrun.core.data.database.dao.FriendDao
-import com.example.trackmyrun.core.data.database.dao.RunDao
+import com.example.trackmyrun.core.data.local.database.RunTrackingDatabase
+import com.example.trackmyrun.core.data.local.database.dao.StatisticsDao
+import com.example.trackmyrun.core.data.local.database.dao.FriendDao
+import com.example.trackmyrun.core.data.local.database.dao.RunDao
 import com.example.trackmyrun.core.utils.PermissionManager
 import com.example.trackmyrun.core.utils.FileImageManager
 import dagger.hilt.android.qualifiers.ApplicationContext

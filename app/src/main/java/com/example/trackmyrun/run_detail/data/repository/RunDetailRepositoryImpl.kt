@@ -1,7 +1,7 @@
 package com.example.trackmyrun.run_detail.data.repository
 
 import com.example.trackmyrun.run_detail.domain.repository.RunDetailRepository
-import com.example.trackmyrun.core.data.database.dao.RunDao
+import com.example.trackmyrun.core.data.local.database.dao.RunDao
 import com.example.trackmyrun.core.domain.model.RunModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

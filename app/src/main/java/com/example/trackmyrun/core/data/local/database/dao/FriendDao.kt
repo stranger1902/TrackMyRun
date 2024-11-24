@@ -1,4 +1,4 @@
-package com.example.trackmyrun.core.data.database.dao
+package com.example.trackmyrun.core.data.local.database.dao
 
 import com.example.trackmyrun.core.data.local.entity.FriendEntity
 import androidx.room.Upsert

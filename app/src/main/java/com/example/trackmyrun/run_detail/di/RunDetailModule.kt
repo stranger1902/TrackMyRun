@@ -2,7 +2,7 @@ package com.example.trackmyrun.run_detail.di
 
 import com.example.trackmyrun.run_detail.data.repository.RunDetailRepositoryImpl
 import com.example.trackmyrun.run_detail.domain.repository.RunDetailRepository
-import com.example.trackmyrun.core.data.database.dao.RunDao
+import com.example.trackmyrun.core.data.local.database.dao.RunDao
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import dagger.hilt.InstallIn

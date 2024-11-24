@@ -1,4 +1,4 @@
-package com.example.trackmyrun.core.data.database.dao
+package com.example.trackmyrun.core.data.local.database.dao
 
 import com.example.trackmyrun.core.domain.model.RunStatisticsModel
 import com.example.trackmyrun.core.domain.model.RunKcalBurnedModel

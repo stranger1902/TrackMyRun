@@ -1,7 +1,7 @@
 package com.example.trackmyrun.run_statistics.data.repository
 
 import com.example.trackmyrun.run_statistics.domain.repository.RunStatisticsRepository
-import com.example.trackmyrun.core.data.database.dao.StatisticsDao
+import com.example.trackmyrun.core.data.local.database.dao.StatisticsDao
 import com.example.trackmyrun.core.domain.model.RunKcalBurnedModel
 import com.example.trackmyrun.core.domain.model.RunStatisticsModel
 import kotlinx.coroutines.Dispatchers
