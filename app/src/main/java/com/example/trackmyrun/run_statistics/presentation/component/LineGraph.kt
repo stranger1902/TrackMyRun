@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
+import kotlin.math.abs
 
 enum class OrderBy {
     START, END
@@ -47,6 +48,11 @@ data class LineGraphConfig(
     val lineColor: Color,
     val orderBy: OrderBy
 )
+
+private fun areOnTheSameStraightLine(point1: Offset, point2: Offset, point3: Offset): Boolean {
+    val area = (point2.x - point1.x) * (point3.y - point1.y) - (point2.y - point1.y) * (point3.x - point1.x)
+    return abs(area) < 0.05f
+}
 
 private fun getIndex(index: Int, size: Int, orderBy: OrderBy): Int {
     return when(orderBy) {
@@ -364,14 +370,29 @@ fun LineGraph(
                             x = controlPointX,
                         )
 
-                        cubicTo(
-                            x1 = controlPoint1.x,
-                            y1 = controlPoint1.y,
-                            x2 = controlPoint2.x,
-                            y2 = controlPoint2.y,
-                            x3 = drawPoints[index].x,
-                            y3 = drawPoints[index].y
-                        )
+                        val areOnTheSameStraightLine = if (index > 1) {
+                            if (index + 1 < drawPoints.size)
+                                areOnTheSameStraightLine(drawPoints[index - 2], drawPoints[index - 1], drawPoints[index]) ||
+                                        areOnTheSameStraightLine(drawPoints[index - 1], drawPoints[index], drawPoints[index + 1])
+                            else
+                                areOnTheSameStraightLine(drawPoints[index - 2], drawPoints[index - 1], drawPoints[index])
+                        } else
+                            areOnTheSameStraightLine(drawPoints[0], drawPoints[1], drawPoints[2])
+
+                        if (areOnTheSameStraightLine)
+                            lineTo(
+                                x = drawPoints[index].x,
+                                y = drawPoints[index].y
+                            )
+                        else
+                            cubicTo(
+                                x1 = controlPoint1.x,
+                                y1 = controlPoint1.y,
+                                x2 = controlPoint2.x,
+                                y2 = controlPoint2.y,
+                                x3 = drawPoints[index].x,
+                                y3 = drawPoints[index].y
+                            )
                     }
 
                     lineTo(
