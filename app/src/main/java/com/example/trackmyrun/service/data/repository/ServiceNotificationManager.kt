@@ -61,13 +61,8 @@ class ServiceNotificationManager @Inject constructor(
         get() = NotificationCompat.Action(
             R.drawable.ic_stopwatch,
             if (isTracking) "Pause" else "Start",
-            PendingIntent.getService(
-                context,
-                2234,
-                Intent(
-                    context,
-                    RunTrackingService::class.java
-                ).apply {
+            PendingIntent.getService(context, 2234,
+                Intent(context, RunTrackingService::class.java).apply {
                     action = if (isTracking) RunTrackingService.PAUSE_RUN_TRACKING else RunTrackingService.START_RUN_TRACKING
                 },
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -78,7 +73,6 @@ class ServiceNotificationManager @Inject constructor(
         baseNotification
             .setWhen(System.currentTimeMillis())
             .apply {
-
                 if (durationInMillis != null) {
                     this@ServiceNotificationManager.durationInMillis = durationInMillis
                     setContentText(durationInMillis.toStopwatchFormat())

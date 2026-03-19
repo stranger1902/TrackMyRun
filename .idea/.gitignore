@@ -1,3 +1,11 @@
 # Default ignored files
 /shelf/
 /workspace.xml
+
+/inspectionProfiles/Project_Default.xml
+
+AndroidProjectSystem.xml
+runConfiguration.xml
+compiler.xml
+gradle.xml
+misc.xml
